@@ -57,6 +57,13 @@
 						</div>
 
 						<div class="form-group">
+							<label class="col-md-4 control-label">City</label>
+							<div class="col-md-6">
+								<input type="text" class="form-control" name="city">
+							</div>
+						</div>
+
+						<div class="form-group">
 							<label class="col-md-4 control-label">Phone Number</label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="phone_number">

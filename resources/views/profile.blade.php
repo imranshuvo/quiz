@@ -20,6 +20,10 @@
     							<dt>Email</dt>
     							<dd>{{ $user->email }}</dd>
     						</div>
+                            <div class="single-dl">
+    							<dt>City</dt>
+    							<dd>{{ $user->city }}</dd>
+    						</div>
     						<div class="single-dl">
     							<dt>Address</dt>
     							<dd>{{ $user->address }}</dd>
@@ -31,7 +35,30 @@
     					</dl>
                     </div>
                     <div class="row col-md-12">
-                        <h4>Today's Score is : </h4>
+                        <h2 class="text-info">Summary</h2>
+                        <table class="table table-striped">
+                            <tr>
+								<th>Quiz</th>
+								<th>Attempted</th>
+								<th>Correct Answered</th>
+								<th>Success percentage</th>
+								<th>Date</th>
+							</tr>
+                            @if(count($user_stats) > 0)
+                                @foreach($user_stats as $user_stat)
+                                    <tr>
+                                        <td>Quiz {{ $user_stat->quiz_id }}</td>
+                                        <td>{{ $user_stat->total_attempt }}</td>
+                                        <td> {{ $user_stat->correct_answers}} </td>
+                                        <td> {{ $user_stat->percentage }}</td>
+                                        <td> {{ $user_stat->added_on }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <h3 class="text-info">No records found! Take quizes!</h3>
+                            @endif
+                        </table>
+                        <!-- <h4>Today's Score is : </h4>
                         @if(count($user_stats) > 0)
                             <dl class="dl-horizontal">
                                 @foreach($user_stats as $user_stat)
@@ -41,10 +68,10 @@
                                     @endif
                                 @endforeach
                             </dl>
-                        @endif
+                        @endif -->
                     </div>
 
-                    <div class="row col-md-12">
+                    <!-- <div class="row col-md-12">
                         <h4>Previous Scores :</h4>
                         @if(count($user_stats) > 0)
                             <dl class="dl-horizontal">
@@ -56,7 +83,12 @@
                                 @endforeach
                             </dl>
                         @endif
+                    </div> -->
+
+                    <div class="row col-md-12 text-center">
+                        <?php echo $user_stats->render(); ?>
                     </div>
+
                 </div>
             </div>
         </div>

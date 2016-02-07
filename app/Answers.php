@@ -7,9 +7,4 @@ class Answers extends Model {
 	//
 	protected $table = 'answers';
 
-
-	// public function option(){
-	// 	return $this->
-	// }
-
 }

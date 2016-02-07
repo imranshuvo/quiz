@@ -3,6 +3,7 @@
 use App\Answers;
 use App\Questions;
 use App\Quiz;
+use App\Options;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -34,10 +35,16 @@ class QuizController extends Controller {
 
 	//Get the right answer id of a question
 	public function getSingleCorrectAnswer($id){
-		$answer = \DB::table('answers')->where('question_id','=',$id)->get();
+		$answer = Answers::where('question_id','=',$id)->get();
 		return $answer;
 	}
 
+	public function getAnswer($option_id){
+		$option = Options::find($option_id);
+		if(isset($option) && count($option) > 0){
+			return $option;
+		}
+	}
 	//Get all the quiz
 	public function getQuiz(){
 		$quiz = Quiz::all();
@@ -111,6 +118,7 @@ class QuizController extends Controller {
 				$correct_answer_count = count($correct_answer);
 			}else{
 				$correct_answer_count = 0;
+				$correct_answer = null;
 			}
 			if(isset($wrong_answer)){
 				$wrong_answer_count = count($wrong_answer);
@@ -127,7 +135,8 @@ class QuizController extends Controller {
 				'percentage' => $success_percentage
 			];
 			\DB::table('results')->insert($result_data);
-			return view('result')->with(['percentage' => $success_percentage,'correct_answer' => $correct_answer,'wrong_answer' => $wrong_answer]);
+			$user_given_inputs = $input['option'];
+			return view('result')->with(['user_given_inputs' => $user_given_inputs,'percentage' => $success_percentage,'correct_answer' => $correct_answer,'wrong_answer' => $wrong_answer]);
 		}else{
 			return view('result')->with(['message' => 'You did not answer any question. Try again!']);
 		}

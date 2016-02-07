@@ -6,11 +6,10 @@
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">Your result </div>
-
                 <div class="panel-body">
                     <ul class="list-group text-center">
                           @if(isset($message))
-                          <li class="list-group-item">{{$message}}</li>
+                          <li class="list-group-item text-warning">{{$message}}</li>
                           @endif
                           @if(isset($correct_answer))
                           <li class="list-group-item">Correct Answer: <span class="text-success">{{ count($correct_answer) }}</span></li>
@@ -22,25 +21,48 @@
                           <li class="list-group-item">Success Percentage: <span class="text-info">{{$percentage}}%</span></li>
                           @endif
                     </ul>
-
+                    @if(isset($wrong_answer) || isset($correct_answer))
+                    <!-- Start of showing the wrong answers with the correct answers -->
                     @if(isset($wrong_answer))
                         <h2 class="alert alert-danger">Wrong Answers</h2>
                         @foreach($wrong_answer as $key => $value )
                             <h4>{{ \App::make('App\Http\Controllers\QuizController')->getQuestion($key) }}</</h4>
                             <ul class="faq">
                                 <?php $options =  \App::make('App\Http\Controllers\QuizController')->getOptions($key);?>
-                                <?php $correct_single_answer = \App::make('App\Http\Controllers\QuizController')->getSingleCorrectAnswer($key);?>
+                                <?php $wrong_single_answers = \App::make('App\Http\Controllers\QuizController')->getSingleCorrectAnswer($key);?>
                                 @foreach($options as $option)
-                                    @if($option->id === $value)
-                                    <li class="text-danger">{{ $option->option }}</li>
+                                    @if(!is_array($value))
+                                        @if($option->id === $value )
+                                            <li class="text-danger">{{ $option->option }}</li>
+                                        @else
+                                            <li>{{ $option->option }}</li>
+                                        @endif
                                     @else
-                                    <li>{{ $option->option }}</li>
+                                        <!-- For multiple values -->
+                                        @if(in_array($option->id,$value))
+                                            <li class="text-danger"> {{ $option->option }} </li>
+                                        @else
+                                            <li>{{ $option->option }}</li>
+                                        @endif
                                     @endif
                                 @endforeach
                             </ul>
+                            <dl class="dl-horizontal">
+                                <dt>Correct Answers</dt>
+                                @if(count($wrong_single_answers) === 1)
+                                <dd class="text-success">{{ \App::make('App\Http\Controllers\QuizController')->getAnswer($wrong_single_answers[0]->option_id)->option }}</dd>
+                                @else
+                                    @foreach($wrong_single_answers as $answers)
+                                        <dd class="text-success">{{ \App::make('App\Http\Controllers\QuizController')->getAnswer($answers->option_id)->option }}</dd>
+                                    @endforeach
+                                @endif
+                            </dl>
                         @endforeach
                     @endif
+                    <!-- End of showing the wrong answers -->
 
+
+                    <!-- Showing the correct answers -->
                     @if(isset($correct_answer))
                         <h2 class="alert alert-info">Correct Answers</h2>
                         @foreach($correct_answer as $key => $value )
@@ -48,41 +70,28 @@
                             <ul class="faq">
                                 <?php $options =  \App::make('App\Http\Controllers\QuizController')->getOptions($key);?>
                                 @foreach($options as $option)
-                                    <li>{{ $option->option }}</li>
+                                @if(!is_array($value))
+                                    @if($option->id === $value )
+                                        <li class="text-success">{{ $option->option }}</li>
+                                    @else
+                                        <li>{{ $option->option }}</li>
+                                    @endif
+                                    @else
+                                        <!-- For multiple values -->
+                                        @if(in_array($option->id,$value))
+                                            <li class="text-success"> {{ $option->option }} </li>
+                                        @else
+                                            <li>{{ $option->option }}</li>
+                                        @endif
+                                    @endif
                                 @endforeach
                             </ul>
                         @endforeach
                     @endif
-
-
-
-
-                    <!-- @if(isset($results))
-                        {{--*/ $i = 1 /*--}}
-                        @foreach($results as $result)
-                            <h4>{{$i}}. {{ \App::make('App\Http\Controllers\QuizController')->getSingleQuestion($result->question_id)->name }}</h4>
-                            <ul class="faq">
-                                <li>{{ \App::make('App\Http\Controllers\QuizController')->getSingleQuestion($result->question_id)->choice1 }}</li>
-                                <li>{{ \App::make('App\Http\Controllers\QuizController')->getSingleQuestion($result->question_id)->choice2 }}</li>
-                                <li>{{ \App::make('App\Http\Controllers\QuizController')->getSingleQuestion($result->question_id)->choice3 }}</li>
-                                <li>{{ \App::make('App\Http\Controllers\QuizController')->getSingleQuestion($result->question_id)->choice4 }}</li>
-                            </ul>
-                            <dl class="dl-horizontal">
-                                @if($result->user_answer === $result->correct_answer)
-                                    <dt>Your Answer: </dt>
-                                    <dd class="text-success">{{ $result->user_answer }}</dd>
-                                @else
-                                    <dt>Your Answer: </dt>
-                                    <dd class="text-danger">{{ $result->user_answer }}</dd>
-                                @endif
-                                <dt>Correct Answer: </dt>
-                                <dd class="text-info">{{ $result->correct_answer }}</dd>
-                            </dl>
-                            {{--*/ $i++ /*--}}
-                        @endforeach
-                    @else
-                    <h4 class="text-warning text-center">Please go back to select a <a href="{{ url('/') }}"> quiz </a></h4>
-                    @endif -->
+                    <!-- End of showing the correct answers -->
+                @else
+                    <h4 class="text-center">Please go back to select a <a href="{{ url('/') }}"> quiz </a></h4>
+                @endif
 
                 </div>
             </div>
