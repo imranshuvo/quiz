@@ -143,8 +143,7 @@ return [
 		'App\Providers\BusServiceProvider',
 		'App\Providers\ConfigServiceProvider',
 		'App\Providers\EventServiceProvider',
-		'App\Providers\RouteServiceProvider',
-
+		'App\Providers\RouteServiceProvider'
 	],
 
 	/*

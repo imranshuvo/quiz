@@ -14,11 +14,9 @@
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
+Route::get('contact','ContactController@index');
+Route::post('contact-us','ContactController@create');
 Route::get('quiz/{id}',['middleware' => 'auth','uses' => 'QuizController@getSingleQuiz']);
-// Route::get('result',['middleware' => 'auth', 'uses' => 'QuizController@result']);
-// // Route::get('quiz/result/{id}',['middleware' => 'auth', 'uses' => 'QuizController@SingleResult']);
-// // Route::get('quiz/result/last/{id}',['middleware' => 'auth', 'uses' => 'QuizController@getResult']);
-
 
 //Quiz submission and calculation
 Route::post('quiz/result',['middleware' => 'auth','uses' => 'QuizController@result']);
