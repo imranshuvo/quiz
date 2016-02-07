@@ -1,0 +1,15 @@
+.quiz-set-select{
+    display: block;
+}
+.dl-horizontal dt{
+    text-align: left;
+}
+ul.questions > li.list-group-item, .final-submit{
+    display: none;
+}
+ul.questions > li.list-group-item.current{
+    display: block;
+}
+.form-group.final-submit.text-center.current{
+    display: block;
+}
