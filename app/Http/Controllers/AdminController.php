@@ -18,6 +18,15 @@ class AdminController extends Controller {
 		return view('admin.index');
 	}
 
+
+
+	/**
+	* Create new quiz page
+	*
+	*/
+	public function getCreateQuizPage(){
+		return view('admin.create');
+	}
 	/**
 	 * Show the form for creating a new resource.
 	 *

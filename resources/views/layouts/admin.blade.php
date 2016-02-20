@@ -35,7 +35,7 @@
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<!-- <li><a href="{{ url('/') }}">Home</a></li> -->
+					<li><a href="{{ url('/dashboard') }}">Dashboard</a></li>
 					 
 				</ul>
 
@@ -43,8 +43,7 @@
 					<li>
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Quiz<span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<li><a href="{{ url('quiz/new') }}">+ Create New Quiz</a></li>
-							<li><a href="{{ url('quiz/all') }}">Quizes</a></li>
+							<li><a href="{{ url('admin/quiz/new') }}">+ Create New Quiz</a></li>
 						</ul>
 					</li>
 					@if(Auth::guest())
