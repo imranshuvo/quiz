@@ -26,3 +26,8 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+
+
+//Admin routes
+Route::get('dashboard',['middleware' => 'auth','uses' => 'AdminController@index']);
