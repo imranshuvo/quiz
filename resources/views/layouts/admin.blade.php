@@ -36,9 +36,7 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li><a href="{{ url('/dashboard') }}">Dashboard</a></li>
-					 
 				</ul>
-
 				<ul class="nav navbar-nav navbar-right">
 					<li>
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Quiz<span class="caret"></span></a>
