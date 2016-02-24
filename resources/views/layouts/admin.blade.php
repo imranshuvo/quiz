@@ -42,6 +42,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Quiz<span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="{{ url('admin/quiz/new') }}">+ Create New Quiz</a></li>
+							<li><a href="{{ url('admin/quiz/all') }}">All Quizes</a></li>
 						</ul>
 					</li>
 					@if(Auth::guest())

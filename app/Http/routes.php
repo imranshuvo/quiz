@@ -32,3 +32,5 @@ Route::controllers([
 //Admin routes
 Route::get('dashboard',['middleware' => 'auth','uses' => 'AdminController@index']);
 Route::get('admin/quiz/new',['middleware' => 'auth','uses' => 'AdminController@getCreateQuizPage']);
+Route::get('admin/quiz/all',['middleware' => 'auth', 'uses' => 'AdminController@getQuizes']);
+Route::get('admin/quiz/{id}',['middleware' => 'auth', 'uses' => 'AdminController@getQuiz']);
