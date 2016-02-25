@@ -21,21 +21,32 @@
                     @endif
 
                     <!-- Show the single quiz questions here and let admin to add new questions into it -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form class="" action="{{ url('admin/question/answer/new') }}" method="post">
-                                @foreach($question->options as $option)
+                    @if($is_answered == true)
+                        <div class="row add-answer-form">
+                            <div class="col-md-12">
+                                <form class="" action="{{ url('admin/question/answer/new') }}" method="post">
+                                    @foreach($question->options as $option)
+                                        <div class="form-group">
+                                            <input type="checkbox" class="" name="option[]" value="{{ $option->id }}"> {{ $option->option }}
+                                        </div>
+                                    @endforeach
                                     <div class="form-group">
-                                        <input type="checkbox" class="" name="option[]" value="{{ $option->id }}"> {{ $option->option }}
+                                        <button type="submit" name="button" class="btn btn-default">Submit</button>
                                     </div>
-                                @endforeach
-                                <div class="form-group">
-                                    <button type="submit" name="button" class="btn btn-default">Submit</button>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-
+                    @else
+                        <div class="row">
+                            <div class="col-md-12">
+                                <ul>
+                                    @foreach($question->options as $option)
+                                        <li>{{ $option->option }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

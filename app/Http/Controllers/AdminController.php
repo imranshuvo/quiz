@@ -135,10 +135,14 @@ class AdminController extends Controller {
 	**/
 	public function getSingleQuestionPage($id){
 		$question = Questions::find($id);
-		$is_answered = Answers::find($id);
-		return count($is_answered);
+		$is_answered = count(Answers::find($id));
+		if(count($is_answered) > 0){
+			$is_answered = true;
+		}else{
+			$is_answered = false;
+		}
 		if(count($question) > 0){
-			return view('admin.single-question')->with(['question' => $question]);
+			return view('admin.single-question')->with(['question' => $question, 'is_answered' => $is_answered]);
 		}
 	}
 }
