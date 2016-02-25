@@ -30,13 +30,13 @@ Route::controllers([
 
 
 //Admin routes
-Route::get('dashboard',['middleware' => 'auth','uses' => 'AdminController@index']);
-Route::get('admin/quiz/new',['middleware' => 'auth','uses' => 'AdminController@getCreateQuizPage']);
-Route::get('admin/quiz/all',['middleware' => 'auth', 'uses' => 'AdminController@getQuizes']);
-Route::get('admin/quiz/{id}',['middleware' => 'auth', 'uses' => 'AdminController@getQuiz']);
-Route::get('quiz/{id}/question/new',['middleware' => 'auth', 'uses' => 'AdminController@getNewQuestionPage']);
-Route::get('admin/question/{id}',['middleware' => 'auth', 'uses' => 'AdminController@getSingleQuestionPage']);
+Route::get('dashboard',['middleware' => ['auth','roles'],'uses' => 'AdminController@index','roles' => 'administrator']);
+Route::get('admin/quiz/new',['middleware' => ['auth','roles'],'uses' => 'AdminController@getCreateQuizPage','roles' => 'administrator']);
+Route::get('admin/quiz/all',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getQuizes','roles' => 'administrator']);
+Route::get('admin/quiz/{id}',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getQuiz','roles' => 'administrator']);
+Route::get('quiz/{id}/question/new',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getNewQuestionPage','roles' => 'administrator']);
+Route::get('admin/question/{id}',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getSingleQuestionPage','roles' => 'administrator']);
 
-Route::post('new-quiz',['middleware' => 'auth' , 'uses' => 'AdminController@createNewQuiz']);
-Route::post('quiz/{id}/question/add',['middleware' => 'auth' , 'uses' => 'AdminController@createNewQuestion']);
-Route::post('admin/question/answer/new',['middleware' => 'auth', 'uses' => 'AdminController@addAnswer']);
+Route::post('new-quiz',['middleware' => ['auth','roles'] , 'uses' => 'AdminController@createNewQuiz','roles' => 'administrator']);
+Route::post('quiz/{id}/question/add',['middleware' => ['auth','roles'] , 'uses' => 'AdminController@createNewQuestion','roles' => 'administrator']);
+Route::post('admin/question/answer/new',['middleware' => ['auth','roles'], 'uses' => 'AdminController@addAnswer','roles' => 'administrator']);
