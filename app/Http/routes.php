@@ -39,3 +39,4 @@ Route::get('admin/question/{id}',['middleware' => 'auth', 'uses' => 'AdminContro
 
 Route::post('new-quiz',['middleware' => 'auth' , 'uses' => 'AdminController@createNewQuiz']);
 Route::post('quiz/{id}/question/add',['middleware' => 'auth' , 'uses' => 'AdminController@createNewQuestion']);
+Route::post('admin/question/answer/new',['middleware' => 'auth', 'uses' => 'AdminController@addAnswer']);

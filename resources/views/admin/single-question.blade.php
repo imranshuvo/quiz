@@ -10,8 +10,7 @@
                 <div class="panel-heading">{{ $question->question_name }}</div>
                 <div class="panel-body">
                     @if (count($errors) > 0)
-                        <div class="alert alert-danger">
-                            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                        <div class="alert alert-info">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -21,10 +20,12 @@
                     @endif
 
                     <!-- Show the single quiz questions here and let admin to add new questions into it -->
-                    @if($is_answered == true)
+                    @if($is_answered == false)
                         <div class="row add-answer-form">
                             <div class="col-md-12">
                                 <form class="" action="{{ url('admin/question/answer/new') }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="question_id" value="{{ $question->id }}">
                                     @foreach($question->options as $option)
                                         <div class="form-group">
                                             <input type="checkbox" class="" name="option[]" value="{{ $option->id }}"> {{ $option->option }}

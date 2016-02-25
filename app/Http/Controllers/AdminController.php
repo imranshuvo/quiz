@@ -135,8 +135,8 @@ class AdminController extends Controller {
 	**/
 	public function getSingleQuestionPage($id){
 		$question = Questions::find($id);
-		$is_answered = count(Answers::find($id));
-		if(count($is_answered) > 0){
+		$is_answered = count(Answers::where('question_id','=',$id)->get());
+		if($is_answered > 0){
 			$is_answered = true;
 		}else{
 			$is_answered = false;
@@ -144,5 +144,19 @@ class AdminController extends Controller {
 		if(count($question) > 0){
 			return view('admin.single-question')->with(['question' => $question, 'is_answered' => $is_answered]);
 		}
+	}
+
+	/**
+	*
+	* Adding answer to a single question
+	**/
+	public function addAnswer(Request $req){
+		$answers = $req->input('option');
+		foreach($answers as $answer){
+			\DB::table('answers')->insert(
+				['option_id' => $answer,'question_id' => $req->input('question_id')]
+			);
+		}
+		return redirect()->back()->withErrors(['Answer added successfully!']);
 	}
 }
