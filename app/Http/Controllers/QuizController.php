@@ -66,10 +66,14 @@ class QuizController extends Controller {
 	//Get single quiz questions
 	public function getSingleQuiz(Request $req,$id){
 		$quiz = Quiz::find($id);
-		$question_ids = \DB::table('question_categories')->where('quiz_id','=',$id)->get();
+		$question_ids = \DB::table('question_categories')->select('question_id')->where('quiz_id','=',$id)->get();
 		foreach($question_ids as $question){
-			$options[$this->getQuestion($question->id)][] = \DB::table('options')->where('question_id','=',$question->id)->select('id','option','question_id')->get();
+			$options[$this->getQuestion($question->question_id)][] = \DB::table('options')->where('question_id','=',$question->question_id)->select('id','option','question_id')->get();
 		}
+		// echo '<pre>';
+		// print_r($options);
+		// echo '</pre>';
+		//return $options;
 		return view('quiz')->with(['questions' => $options,'quiz' => $quiz]);
 	}
 
