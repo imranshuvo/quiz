@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">{{ $quiz->quiz_name }}</div>
+                <div class="panel-heading">{{ $question->question_name }}</div>
                 <div class="panel-body">
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
@@ -23,20 +23,16 @@
                     <!-- Show the single quiz questions here and let admin to add new questions into it -->
                     <div class="row">
                         <div class="col-md-12">
-                            <a href="{{ url('quiz') }}/{{ $quiz->id }}/question/new" class="btn btn-default">+Add New Question</a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            @if(isset($question_ids))
-                                <ol class="list-group" type="1">
-                                    <?php $i = 1 ; ?>
-                                    @foreach($question_ids as $question_id)
-                                        <li class="list-group-item"><span>{{ $i }}</span>.<a href="{{ url('admin/question')}}/{{ $question_id->question_id }}"> {{ \App::make('App\Http\Controllers\AdminController')->getQuizQuestion($question_id->question_id)->question_name }}</a></li>
-                                        <?php $i++; ?>
-                                    @endforeach
-                                </ol>
-                            @endif
+                            <form class="" action="{{ url('admin/question/answer/new') }}" method="post">
+                                @foreach($question->options as $option)
+                                    <div class="form-group">
+                                        <input type="checkbox" class="" name="option[]" value="{{ $option->id }}"> {{ $option->option }}
+                                    </div>
+                                @endforeach
+                                <div class="form-group">
+                                    <button type="submit" name="button" class="btn btn-default">Submit</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 

@@ -34,3 +34,8 @@ Route::get('dashboard',['middleware' => 'auth','uses' => 'AdminController@index'
 Route::get('admin/quiz/new',['middleware' => 'auth','uses' => 'AdminController@getCreateQuizPage']);
 Route::get('admin/quiz/all',['middleware' => 'auth', 'uses' => 'AdminController@getQuizes']);
 Route::get('admin/quiz/{id}',['middleware' => 'auth', 'uses' => 'AdminController@getQuiz']);
+Route::get('quiz/{id}/question/new',['middleware' => 'auth', 'uses' => 'AdminController@getNewQuestionPage']);
+Route::get('admin/question/{id}',['middleware' => 'auth', 'uses' => 'AdminController@getSingleQuestionPage']);
+
+Route::post('new-quiz',['middleware' => 'auth' , 'uses' => 'AdminController@createNewQuiz']);
+Route::post('quiz/{id}/question/add',['middleware' => 'auth' , 'uses' => 'AdminController@createNewQuestion']);
