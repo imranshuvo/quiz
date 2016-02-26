@@ -122,11 +122,11 @@ class QuizController extends Controller {
 				$correct_answer_count = count($correct_answer);
 				//Get the skill result
 				$correct_answer_array = array_keys($correct_answer);
-				$total_questions = $correct_answer_count+count($wrong_answer);
-				return $this->getSkillResult($correct_answer_array,$total_questions);
+				$chart = $this->getSkillResult($correct_answer_array);
 			}else{
 				$correct_answer_count = 0;
 				$correct_answer = null;
+				$chart = null;
 			}
 			if(isset($wrong_answer)){
 				$wrong_answer_count = count($wrong_answer);
@@ -144,14 +144,14 @@ class QuizController extends Controller {
 			];
 			\DB::table('results')->insert($result_data);
 			$user_given_inputs = $input['option'];
-			return view('result')->with(['user_given_inputs' => $user_given_inputs,'percentage' => $success_percentage,'correct_answer' => $correct_answer,'wrong_answer' => $wrong_answer]);
+			return view('result')->with(['chart' => $chart,'user_given_inputs' => $user_given_inputs,'percentage' => $success_percentage,'correct_answer' => $correct_answer,'wrong_answer' => $wrong_answer]);
 		}else{
 			return view('result')->with(['message' => 'You did not answer any question. Try again!']);
 		}
 	}
 
 	//Calculate the skill result for piechart
-	public function getSkillResult(&$ids,$total_question){
+	public function getSkillResult(&$ids){
 		if(count($ids) > 0){
 			foreach($ids as $id){
 				$skill_id = \DB::table('skill_question')->join('skills','skill_question.skill_id','=','skills.id')->select('skills.id')->where('question_id','=',$id)->get();
@@ -159,6 +159,7 @@ class QuizController extends Controller {
 					$skills_id_array[] = $id->id;
 				}
 			}
+			// var_dump($skills_id_array);
 			//Get the number of occurance of an skill into array
 			$b = array_count_values($skills_id_array);
 			//Make the array from $b
@@ -171,7 +172,7 @@ class QuizController extends Controller {
 				$skill_name = $this->getSkillName($key);
 				$chart[$skill_name[0]->title] = round(($value *100)/count($ids));
 			}
-			var_dump($chart);
+			return $chart;
 		}
 	}
 

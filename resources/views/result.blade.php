@@ -21,6 +21,14 @@
                           <li class="list-group-item">Success Percentage: <span class="text-info">{{$percentage}}%</span></li>
                           @endif
                     </ul>
+                    <ul class="list-group text-center">
+                        @if(isset($chart) && count($chart) > 0)
+                            <h3>Skill statistics (Based on your correct answer)</h3>
+                            @foreach($chart as $key => $value)
+                                <li class="list-group-item">{{ $key }} : {{ $value }}% @if($value < 40) <span class="text-danger">You need to work on your on your {{ $key }} skills</span>@elseif($value > 40) <span class="text-info">Your {{ $key }} skill is okay!</span>@endif</li>
+                            @endforeach
+                        @endif
+                    </ul>
                     @if(isset($wrong_answer) || isset($correct_answer))
                     <!-- Start of showing the wrong answers with the correct answers -->
                     @if(isset($wrong_answer))
