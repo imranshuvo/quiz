@@ -68,7 +68,8 @@ class AdminController extends Controller {
 	**/
 	public function getNewQuestionPage($id){
 		$quiz_id = $id;
-		return view('admin.create-question')->with(['quiz_id' => $quiz_id]);
+		$skills = \DB::table('skills')->get();
+		return view('admin.create-question')->with(['quiz_id' => $quiz_id,'skills' => $skills]);
 	}
 
 	/**
@@ -106,13 +107,18 @@ class AdminController extends Controller {
 			'question_name' => $req->input('question_name')
 		];
 		$this->validate($req,[
-			'question_name' => 'required'
+			'question_name' => 'required',
+			'skill' => 'required',
 		]);
 		$question_id = \DB::table('questions')->insertGetId($question_table_data);
 		if($question_id != null){
 			\DB::table('question_categories')->insert([
 				'question_id' => $question_id,
 				'quiz_id' => $quiz_id,
+			]);
+			\DB::table('skill_question')->insert([
+				'skill_id' => $req->input('skill'),
+				'question_id' => $question_id
 			]);
 			$options_table_data =[
 				['option' => $req->input('option1'),'question_id' => $question_id],
@@ -158,5 +164,25 @@ class AdminController extends Controller {
 			);
 		}
 		return redirect()->back()->withErrors(['Answer added successfully!']);
+	}
+
+
+	/**
+	*
+	* Getting the create skill page
+	**/
+	public function getCreateSkillPage(){
+		return view('admin.create-skill');
+	}
+	public function createNewSkill(Request $req){
+		$data = [
+			'title' => $req->input('skill_name'),
+		];
+		$this->validate($req,[
+			'skill_name' => 'required'
+		]);
+		if(\DB::table('skills')->insert($data)){
+			return redirect()->back()->withErrors(['New skill added successfully!']);
+		}
 	}
 }

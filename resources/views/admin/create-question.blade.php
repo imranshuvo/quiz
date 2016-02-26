@@ -41,6 +41,19 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group row">
+                                    <label for="" class="col-md-2 control-label">Skill</label>
+                                    <div class="col-md-10">
+                                        @if(isset($skills) && count($skills) > 0)
+                                            <select class="form-control" name="skill">
+                                                @foreach($skills as $skill)
+                                                    <option value="{{ $skill->id }}">{{ $skill->title }}
+                                                @endforeach
+                                            </select>
+                                        @endif
+                                    </div>
+                                </div>
+
                                 <div class="form-group text-center">
                                     <button type="submit" name="button" class="btn btn-default">Submit</button>
                                 </div>

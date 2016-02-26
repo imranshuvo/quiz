@@ -36,7 +36,9 @@ Route::get('admin/quiz/all',['middleware' => ['auth','roles'], 'uses' => 'AdminC
 Route::get('admin/quiz/{id}',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getQuiz','roles' => 'administrator']);
 Route::get('quiz/{id}/question/new',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getNewQuestionPage','roles' => 'administrator']);
 Route::get('admin/question/{id}',['middleware' => ['auth','roles'], 'uses' => 'AdminController@getSingleQuestionPage','roles' => 'administrator']);
+Route::get('admin/skill/new',['middleware' => ['auth','roles'],'uses' => 'AdminController@getCreateSkillPage']);
 
 Route::post('new-quiz',['middleware' => ['auth','roles'] , 'uses' => 'AdminController@createNewQuiz','roles' => 'administrator']);
+Route::post('new-skill',['middleware' => ['auth','roles'] , 'uses' => 'AdminController@createNewSkill','roles' => 'administrator']);
 Route::post('quiz/{id}/question/add',['middleware' => ['auth','roles'] , 'uses' => 'AdminController@createNewQuestion','roles' => 'administrator']);
 Route::post('admin/question/answer/new',['middleware' => ['auth','roles'], 'uses' => 'AdminController@addAnswer','roles' => 'administrator']);
