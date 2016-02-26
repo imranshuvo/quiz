@@ -7,7 +7,8 @@
 	"require": {
 		"laravel/framework": "5.0.*",
 		"kodeine/laravel-acl": "~1.0@dev",
-		"doctrine/dbal": "~2.3"
+		"doctrine/dbal": "~2.3",
+		"khill/lavacharts" : "3.0.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",

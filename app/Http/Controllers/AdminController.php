@@ -141,6 +141,7 @@ class AdminController extends Controller {
 	**/
 	public function getSingleQuestionPage($id){
 		$question = Questions::find($id);
+		$quiz = QuestionCategories::where('question_id','=',$id)->get()->first();
 		$is_answered = count(Answers::where('question_id','=',$id)->get());
 		if($is_answered > 0){
 			$is_answered = true;
@@ -148,7 +149,7 @@ class AdminController extends Controller {
 			$is_answered = false;
 		}
 		if(count($question) > 0){
-			return view('admin.single-question')->with(['question' => $question, 'is_answered' => $is_answered]);
+			return view('admin.single-question')->with(['quiz' => $quiz,'question' => $question, 'is_answered' => $is_answered]);
 		}
 	}
 
@@ -172,7 +173,8 @@ class AdminController extends Controller {
 	* Getting the create skill page
 	**/
 	public function getCreateSkillPage(){
-		return view('admin.create-skill');
+		$skills = \DB::table('skills')->get();
+		return view('admin.create-skill')->with(['skills' => $skills]);
 	}
 	public function createNewSkill(Request $req){
 		$data = [

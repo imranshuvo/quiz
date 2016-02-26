@@ -120,6 +120,10 @@ class QuizController extends Controller {
 			}
 			if(isset($correct_answer)){
 				$correct_answer_count = count($correct_answer);
+				//Get the skill result
+				$correct_answer_array = array_keys($correct_answer);
+				$total_questions = $correct_answer_count+count($wrong_answer);
+				return $this->getSkillResult($correct_answer_array,$total_questions);
 			}else{
 				$correct_answer_count = 0;
 				$correct_answer = null;
@@ -146,6 +150,34 @@ class QuizController extends Controller {
 		}
 	}
 
+	//Calculate the skill result for piechart
+	public function getSkillResult(&$ids,$total_question){
+		if(count($ids) > 0){
+			foreach($ids as $id){
+				$skill_id = \DB::table('skill_question')->join('skills','skill_question.skill_id','=','skills.id')->select('skills.id')->where('question_id','=',$id)->get();
+				foreach($skill_id as $id){
+					$skills_id_array[] = $id->id;
+				}
+			}
+			//Get the number of occurance of an skill into array
+			$b = array_count_values($skills_id_array);
+			//Make the array from $b
+			$skill_id_array = array_keys($b);
+			//Make the key, value pair of skill_id => $number_of_current_answer
+			$a = array_combine($b,$skill_id_array);
+			// var_dump($a);
+			// var_dump($skill_id_array);
+			foreach($a as $key => $value ){
+				$skill_name = $this->getSkillName($key);
+				$chart[$skill_name[0]->title] = round(($value *100)/count($ids));
+			}
+			var_dump($chart);
+		}
+	}
 
-
+	//Get the name of the skill
+	public function getSkillName($id){
+		$skill = \DB::table('skills')->where('id','=',$id)->get();
+		return $skill;
+	}
 }

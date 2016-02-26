@@ -47,6 +47,7 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="row"><div class="col-md-12"><h3>Go back to <a href="{{ url('admin/quiz') }}/{{ $quiz->quiz_id }}">questions</a></h3>
                     @endif
                 </div>
             </div>

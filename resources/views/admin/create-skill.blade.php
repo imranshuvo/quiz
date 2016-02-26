@@ -19,6 +19,8 @@
 						</div>
 					@endif
 
+					<h3 class="alert alert-info">Check the skill list below first. If you don't find the required one then create one!</h3>
+
 					<form class="form-horizontal" role="form" method="POST" action="{{ url('new-skill') }}">
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 
@@ -37,6 +39,18 @@
 						</div>
 
 					</form>
+
+					<div class="row">
+						<div class="col-md-12">
+							@if(count($skills) > 0)
+							<ul class="list-group">
+								@foreach($skills as $skill)
+									<li class="list-group-item">{{ $skill->title }}</li>
+								@endforeach
+							</ul>
+							@endif
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
