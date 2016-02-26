@@ -145,6 +145,7 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
 		Kodeine\Acl\AclServiceProvider::class,
+		Barryvdh\DomPDF\ServiceProvider::class,
 	],
 
 	/*
@@ -192,6 +193,7 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
+		'PDF' => Barryvdh\DomPDF\Facade::class,
 
 	],
 

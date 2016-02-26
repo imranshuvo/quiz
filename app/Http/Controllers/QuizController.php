@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 
 class QuizController extends Controller {
 
+	public $skill_chart_stat = array();
+
 
 	public function fiterQuestion($id){
 		$answers = \DB::table('answers')->where('question_id','=',$id)->get();
@@ -144,6 +146,8 @@ class QuizController extends Controller {
 			];
 			\DB::table('results')->insert($result_data);
 			$user_given_inputs = $input['option'];
+			//Call the pdf creation and sending email function here to include the $skill data and user result data
+
 			return view('result')->with(['chart' => $chart,'user_given_inputs' => $user_given_inputs,'percentage' => $success_percentage,'correct_answer' => $correct_answer,'wrong_answer' => $wrong_answer]);
 		}else{
 			return view('result')->with(['message' => 'You did not answer any question. Try again!']);
@@ -172,6 +176,7 @@ class QuizController extends Controller {
 				$skill_name = $this->getSkillName($key);
 				$chart[$skill_name[0]->title] = round(($value *100)/count($ids));
 			}
+			$this->skill_chart_stat = $chart;
 			return $chart;
 		}
 	}
@@ -180,5 +185,44 @@ class QuizController extends Controller {
 	public function getSkillName($id){
 		$skill = \DB::table('skills')->where('id','=',$id)->get();
 		return $skill;
+	}
+
+
+	//Populate the html file to be converted into pdf
+	public function getUserStatsForPdf(){
+		$user = \Auth::user();
+		$user_stat = \DB::table('ressults')->where('user_id','=',$user->id)->get();
+		return $user_stat;
+	}
+	public function getSkillStats(){
+		$skill_stat = $this->skill_chart_stat;
+		return $skill_stat;
+	}
+
+	//Generate pdf and
+	public function generatePdf(){
+		$file_name = time().'report.pdf';
+		$file_path = public_path('report');
+		$user_stat = $this->getUserStatsForPdf();
+		$skill_stat = $this->getSkillStats();
+		$htmlcontent = view('report.report')->with(['user_stat' => $user_stat,'skill_stat']);
+		\PDF::loadHTML($htmlcontent)
+			->setPaper('a4')
+			->setOrientation('portrait')
+			->save($file_path.$file_name);
+		$mail_template = 'emails.email_report';
+		$data['receipent_name'] = \Auth::user()->name;
+		$data['receipent_email'] = \Auth::user()->email;
+		$data['message'] = $message;
+		$mail_receipents[\Auth::user()->email] = \Auth::user()->name;
+		$mail_subject = 'Result Report';
+		$mailMessage = 'Please see the report attatched for you order.';
+		$mail_attachment = $file_path.$file_name;
+		\Mail::send($mail_template,$data,
+		function($mailMessage) use ($mail_receipents, $mail_subject, $mail_attachment){
+			$message->to($mail_receipents)->subject($mail_subject);
+			$message->attach($mail_attachment);
+		});
+		unlink($file_path.$file_name);
 	}
 }
