@@ -40,7 +40,7 @@
                                 <?php $wrong_single_answers = \App::make('App\Http\Controllers\QuizController')->getSingleCorrectAnswer($key);?>
                                 @foreach($options as $option)
                                     @if(!is_array($value))
-                                        @if($option->id === $value )
+                                        @if($option->id == $value )
                                             <li class="text-danger">{{ $option->option }}</li>
                                         @else
                                             <li>{{ $option->option }}</li>
@@ -57,7 +57,7 @@
                             </ul>
                             <dl class="dl-horizontal">
                                 <dt>Correct Answers</dt>
-                                @if(count($wrong_single_answers) === 1)
+                                @if(count($wrong_single_answers) == 1)
                                 <dd class="text-success">{{ \App::make('App\Http\Controllers\QuizController')->getAnswer($wrong_single_answers[0]->option_id)->option }}</dd>
                                 @else
                                     @foreach($wrong_single_answers as $answers)
@@ -79,7 +79,7 @@
                                 <?php $options =  \App::make('App\Http\Controllers\QuizController')->getOptions($key);?>
                                 @foreach($options as $option)
                                 @if(!is_array($value))
-                                    @if($option->id === $value )
+                                    @if($option->id == $value )
                                         <li class="text-success">{{ $option->option }}</li>
                                     @else
                                         <li>{{ $option->option }}</li>
