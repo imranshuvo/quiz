@@ -65,6 +65,12 @@ class QuizController extends Controller {
 		return $quiz_number;
 	}
 
+	//Get the name of a quiz
+	public function getQuizName($id){
+		$quiz = Quiz::find($id)->quiz_name;
+		return $quiz;
+	}
+
 	//Get single quiz questions
 	public function getSingleQuiz(Request $req,$id){
 		$quiz = Quiz::find($id);

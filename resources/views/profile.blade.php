@@ -47,7 +47,7 @@
                             @if(count($user_stats) > 0)
                                 @foreach($user_stats as $user_stat)
                                     <tr>
-                                        <td>Quiz {{ $user_stat->quiz_id }}</td>
+                                        <td> {{ \App::make('App\Http\Controllers\QuizController')->getQuizName($user_stat->quiz_id) }}</td>
                                         <td>{{ $user_stat->total_attempt }}</td>
                                         <td> {{ $user_stat->correct_answers}} </td>
                                         <td> {{ $user_stat->percentage }}</td>
