@@ -12,6 +12,8 @@
 */
 
 Route::get('/', 'WelcomeController@index');
+Route::get('/verification/{confirmationCode}','UserController@verify');
+Route::post('/Registration','UserController@Registered');
 
 Route::get('home', 'HomeController@index');
 Route::get('contact','ContactController@index');

@@ -125,6 +125,7 @@ class QuizController extends Controller {
 				//Get the skill result
 				$correct_answer_array = array_keys($correct_answer);
 				$chart = $this->getSkillResult($correct_answer_array);
+				$this->generatePdf($chart);
 			}else{
 				$correct_answer_count = 0;
 				$correct_answer = null;
@@ -200,11 +201,11 @@ class QuizController extends Controller {
 	}
 
 	//Generate pdf and
-	public function generatePdf(){
+	public function generatePdf($chart){
 		$file_name = time().'report.pdf';
 		$file_path = public_path('report');
 		$user_stat = $this->getUserStatsForPdf();
-		$skill_stat = $this->getSkillStats();
+		$skill_stat = $chart;
 		$htmlcontent = view('report.report')->with(['user_stat' => $user_stat,'skill_stat']);
 		\PDF::loadHTML($htmlcontent)
 			->setPaper('a4')
