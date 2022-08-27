@@ -5,17 +5,14 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "^9.19",
-		"kodeine/laravel-acl": "~2.0.7",
-		"doctrine/dbal": "^2.9",
-		"orchestra/testbench": "^7.7.0",
-		"guzzlehttp/guzzle": "^7.2",
-		"sebastian/exporter": "^4.0.3",
-		"laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7"
+		"laravel/framework": "5.0.*",
+		"kodeine/laravel-acl": "~1.0@dev",
+		"doctrine/dbal": "~2.3",
+		"barryvdh/laravel-dompdf": "0.6.*"
 		},
 	"require-dev": {
-		"phpunit/phpunit": "^9.5.10"
+		"phpunit/phpunit": "~4.0",
+		"phpspec/phpspec": "~2.1"
 	},
 	"autoload": {
 		"classmap": [
@@ -45,9 +42,6 @@
 		]
 	},
 	"config": {
-		"preferred-install": "dist",
-		"allow-plugins": {
-			"kylekatarnls/update-helper": true
-		}
+		"preferred-install": "dist"
 	}
 }
