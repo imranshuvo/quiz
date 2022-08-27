@@ -1,3 +1,3 @@
 ## Quiz app on top of Laravel. 
 
-Development ongoing...
+This is the version on Laravel 5.0. 
