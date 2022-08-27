@@ -30,7 +30,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="{{ url('/') }}">Qcmguru</a>
+				<a class="navbar-brand" href="{{ url('/') }}">Quiz</a>
 			</div>
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -64,7 +64,8 @@
 
 	<div class="footer">
 	 	<p></p>
-		<p align="center">Il y a actuellement 1 visiteur(s) connecté(s) à QCM!GuRu!</p>	<p align="center" class="text-muted">&copy; Charles Bayzelon 2016 - QCM Guru! Online</p>
+		<p align="center">@<a href="https://ishuvo.com">iShuvo.com Ltd.</a></p>	
+		<p align="center" class="text-muted">&copy; Md Imran Khan - 9amdev</p>
 	 </div>
 
 	<!-- Scripts -->
