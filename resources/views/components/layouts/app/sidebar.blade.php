@@ -11,9 +11,12 @@
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
+            <livewire:workspace.switcher />
+
             <flux:navlist variant="outline">
                 <flux:navlist.group heading="Platform" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
+                    <flux:navlist.item icon="clipboard-document-list" :href="route('questionnaires.index')" :current="request()->routeIs('questionnaires.*')" wire:navigate>Questionnaires</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\WorkspaceInvitationController;
+use App\Livewire\Questionnaires\Editor as QuestionnaireEditor;
+use App\Livewire\Questionnaires\Index as QuestionnairesIndex;
 use App\Livewire\Settings\Members as MembersPage;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -21,6 +23,9 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
     Route::get('settings/members', MembersPage::class)->name('settings.members');
+
+    Route::get('questionnaires', QuestionnairesIndex::class)->name('questionnaires.index');
+    Route::get('questionnaires/{questionnaire}/edit', QuestionnaireEditor::class)->name('questionnaires.edit');
 });
 
 Route::get('invitations/{token}', [WorkspaceInvitationController::class, 'show'])
