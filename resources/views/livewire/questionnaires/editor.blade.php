@@ -11,7 +11,22 @@
             @if ($questionnaire->status->value !== 'published')
                 <flux:button size="sm" variant="primary" icon="rocket-launch" wire:click="publish">Publish</flux:button>
             @else
-                <flux:button size="sm" variant="ghost" icon="archive-box" wire:click="archive">Archive</flux:button>
+                <div class="flex gap-2">
+                    @php
+                        $shareUrl = $questionnaire->kind->value === 'poll'
+                            ? route('public.poll', $questionnaire->slug)
+                            : route('public.taker', $questionnaire->slug);
+                    @endphp
+                    <flux:button
+                        size="sm"
+                        variant="ghost"
+                        icon="link"
+                        :href="$shareUrl"
+                        target="_blank"
+                    >Open</flux:button>
+                    <flux:button size="sm" variant="ghost" icon="archive-box" wire:click="archive">Archive</flux:button>
+                </div>
+                <flux:text size="sm" class="!font-mono text-zinc-500">{{ $shareUrl }}</flux:text>
             @endif
             @error('publish') <flux:text size="sm" class="text-red-600">{{ $message }}</flux:text> @enderror
         </div>
