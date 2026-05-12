@@ -35,7 +35,12 @@
     <flux:separator />
 
     <div class="space-y-6">
-        <flux:heading size="md">Questions</flux:heading>
+        <div class="flex items-center justify-between gap-3">
+            <flux:heading size="md">Questions</flux:heading>
+            <flux:button size="sm" variant="primary" icon="sparkles" wire:click="openAiGenerate">
+                Generate with AI
+            </flux:button>
+        </div>
 
         @forelse ($questions as $q)
             <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-4 space-y-3" wire:key="q-{{ $q->id }}">
@@ -122,4 +127,37 @@
             @endforeach
         </div>
     </div>
+
+    <flux:modal wire:model.self="showAiGenerate" name="ai-generate" class="md:w-[32rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg" class="flex items-center gap-2">
+                    <flux:icon.sparkles class="size-5 text-fuchsia-500" />
+                    Generate questions with AI
+                </flux:heading>
+                <flux:subheading>Describe the topic and we'll draft a starting set you can refine.</flux:subheading>
+            </div>
+
+            <flux:textarea
+                wire:model="aiTopic"
+                label="Topic or prompt"
+                rows="4"
+                placeholder="e.g. Photosynthesis basics for 8th-grade biology — focus on light vs. dark reactions"
+                autofocus
+            />
+
+            <flux:input wire:model="aiCount" type="number" min="1" max="20" label="How many questions?" class="w-32" />
+
+            @if ($aiError)
+                <flux:callout icon="exclamation-triangle" color="red">{{ $aiError }}</flux:callout>
+            @endif
+
+            <div class="flex items-center justify-end gap-2">
+                <flux:button variant="ghost" x-on:click="$wire.showAiGenerate = false" :disabled="$aiGenerating">Cancel</flux:button>
+                <flux:button variant="primary" icon="sparkles" wire:click="generateWithAi" :loading="$aiGenerating">
+                    {{ $aiGenerating ? 'Generating…' : 'Generate' }}
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

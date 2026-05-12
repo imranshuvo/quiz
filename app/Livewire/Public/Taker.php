@@ -7,6 +7,7 @@ use App\Enums\QuestionnaireStatus;
 use App\Enums\QuestionType;
 use App\Enums\ResponseStatus;
 use App\Events\PollVoteRecorded;
+use App\Jobs\GradeResponse;
 use App\Models\Question;
 use App\Models\Questionnaire;
 use App\Models\Response;
@@ -172,6 +173,13 @@ class Taker extends Component
         ])->save();
 
         $scoring->scoreResponse($response->refresh());
+
+        // Async AI grading of any open-ended answers — bumps Response.score
+        // when it lands. The result page reads whatever score is current at
+        // view time, so the user may see a slightly higher score on refresh.
+        if ($response->questionnaire->kind->isGraded()) {
+            GradeResponse::dispatch($response->id, $this->workspaceId);
+        }
 
         $this->redirect(route('public.result', [
             'slug' => $this->slug,

@@ -7,11 +7,13 @@ use App\Enums\QuestionType;
 use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\Questionnaire;
+use App\Services\AI\QuestionGenerator;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Throwable;
 
 #[Layout('components.layouts.app')]
 class Editor extends Component
@@ -21,6 +23,17 @@ class Editor extends Component
     public string $title = '';
 
     public string $description = '';
+
+    /* AI generate modal state */
+    public bool $showAiGenerate = false;
+
+    public string $aiTopic = '';
+
+    public int $aiCount = 5;
+
+    public bool $aiGenerating = false;
+
+    public ?string $aiError = null;
 
     public function mount(Questionnaire $questionnaire): void
     {
@@ -62,6 +75,41 @@ class Editor extends Component
     public function archive(): void
     {
         $this->questionnaire->archive();
+    }
+
+    public function openAiGenerate(): void
+    {
+        $this->reset(['aiTopic', 'aiCount', 'aiError', 'aiGenerating']);
+        $this->aiCount = 5;
+        $this->showAiGenerate = true;
+    }
+
+    public function generateWithAi(QuestionGenerator $generator): void
+    {
+        $this->validate([
+            'aiTopic' => ['required', 'string', 'min:3', 'max:2000'],
+            'aiCount' => ['required', 'integer', 'min:1', 'max:20'],
+        ]);
+
+        $this->aiGenerating = true;
+        $this->aiError = null;
+
+        try {
+            $generator->generateForTopic(
+                questionnaire: $this->questionnaire,
+                topic: $this->aiTopic,
+                count: $this->aiCount,
+                userId: auth()->id(),
+            );
+        } catch (Throwable $e) {
+            $this->aiError = 'AI generation failed: '.$e->getMessage();
+            $this->aiGenerating = false;
+            return;
+        }
+
+        $this->aiGenerating = false;
+        $this->showAiGenerate = false;
+        $this->reset(['aiTopic']);
     }
 
     public function addQuestion(string $type): void

@@ -5,6 +5,7 @@ use App\Enums\QuestionnaireStatus;
 use App\Enums\QuestionType;
 use App\Enums\ResponseStatus;
 use App\Events\PollVoteRecorded;
+use App\Jobs\GradeResponse;
 use App\Livewire\Public\Taker;
 use App\Models\Question;
 use App\Models\QuestionOption;
@@ -14,6 +15,7 @@ use App\Models\ResponseAnswer;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Tenancy;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 
@@ -112,6 +114,7 @@ it('next() advances after an answer is recorded', function () {
 });
 
 it('submit() finalizes the response and computes score for assessments', function () {
+    Bus::fake([GradeResponse::class]); // async AI grading isn't tested here.
     $q = publishedAssessment($this->workspace);
     $first = $q->questions()->orderBy('position')->first();
     $second = $q->questions()->orderBy('position')->skip(1)->first();
@@ -126,9 +129,11 @@ it('submit() finalizes the response and computes score for assessments', functio
     expect($r->status)->toBe(ResponseStatus::Submitted);
     expect((float) $r->score)->toBe(2.0);
     expect((float) $r->max_score)->toBe(2.0);
+    Bus::assertDispatched(GradeResponse::class);
 });
 
 it('public result route returns 200 for a submitted response', function () {
+    Bus::fake([GradeResponse::class]);
     $q = publishedAssessment($this->workspace);
     $first = $q->questions()->orderBy('position')->first();
     $second = $q->questions()->orderBy('position')->skip(1)->first();
