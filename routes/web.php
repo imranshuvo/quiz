@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\WorkspaceInvitationController;
+use App\Livewire\Settings\Members as MembersPage;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -17,6 +19,14 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+
+    Route::get('settings/members', MembersPage::class)->name('settings.members');
 });
+
+Route::get('invitations/{token}', [WorkspaceInvitationController::class, 'show'])
+    ->name('workspace-invitations.show');
+Route::post('invitations/{token}/accept', [WorkspaceInvitationController::class, 'accept'])
+    ->middleware('auth')
+    ->name('workspace-invitations.accept');
 
 require __DIR__.'/auth.php';
