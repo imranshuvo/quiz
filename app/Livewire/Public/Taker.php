@@ -7,6 +7,7 @@ use App\Enums\QuestionnaireStatus;
 use App\Enums\QuestionType;
 use App\Enums\ResponseStatus;
 use App\Events\PollVoteRecorded;
+use App\Events\ResponseSubmitted;
 use App\Jobs\GradeResponse;
 use App\Models\Question;
 use App\Models\Questionnaire;
@@ -180,6 +181,10 @@ class Taker extends Component
         if ($response->questionnaire->kind->isGraded()) {
             GradeResponse::dispatch($response->id, $this->workspaceId);
         }
+
+        // Fan out: webhooks (DispatchWebhooks listener), and any future
+        // analytics / notification listeners.
+        event(new ResponseSubmitted($response->fresh()));
 
         $this->redirect(route('public.result', [
             'slug' => $this->slug,

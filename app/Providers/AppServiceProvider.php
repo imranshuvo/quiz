@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\ResponseSubmitted;
 use App\Listeners\CreatePersonalWorkspace;
+use App\Listeners\DispatchWebhooks;
 use App\Models\Workspace;
 use App\Services\Tenancy;
 use Illuminate\Auth\Events\Registered;
@@ -25,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
         Cashier::useCustomerModel(Workspace::class);
 
         Event::listen(Registered::class, CreatePersonalWorkspace::class);
+        Event::listen(ResponseSubmitted::class, DispatchWebhooks::class);
     }
 }
