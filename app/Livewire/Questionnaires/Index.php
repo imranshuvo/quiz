@@ -4,6 +4,7 @@ namespace App\Livewire\Questionnaires;
 
 use App\Enums\QuestionnaireKind;
 use App\Models\Questionnaire;
+use App\Services\Billing\Limits;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -34,11 +35,16 @@ class Index extends Component
         $this->showCreate = true;
     }
 
-    public function create(Tenancy $tenancy): void
+    public function create(Tenancy $tenancy, Limits $limits): void
     {
         $workspace = $tenancy->current();
         abort_unless($workspace, 404);
         abort_unless(auth()->user()->roleIn($workspace)?->canEditContent(), 403);
+
+        if (! $limits->canCreateQuestionnaire($workspace)) {
+            $this->addError('plan', 'You\'ve reached your plan\'s questionnaire limit. Upgrade to add more.');
+            return;
+        }
 
         $this->validate();
 

@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\QuestionOption;
 use App\Models\Questionnaire;
 use App\Services\AI\QuestionGenerator;
+use App\Services\Billing\Limits;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
@@ -84,12 +85,17 @@ class Editor extends Component
         $this->showAiGenerate = true;
     }
 
-    public function generateWithAi(QuestionGenerator $generator): void
+    public function generateWithAi(QuestionGenerator $generator, Limits $limits): void
     {
         $this->validate([
             'aiTopic' => ['required', 'string', 'min:3', 'max:2000'],
             'aiCount' => ['required', 'integer', 'min:1', 'max:20'],
         ]);
+
+        if (! $limits->canMakeAiCall($this->questionnaire->workspace)) {
+            $this->aiError = 'You\'ve hit your AI call limit for this month. Upgrade your plan or wait until next month.';
+            return;
+        }
 
         $this->aiGenerating = true;
         $this->aiError = null;

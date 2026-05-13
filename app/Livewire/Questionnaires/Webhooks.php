@@ -4,6 +4,7 @@ namespace App\Livewire\Questionnaires;
 
 use App\Models\Questionnaire;
 use App\Models\WebhookEndpoint;
+use App\Services\Billing\Limits;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -39,13 +40,18 @@ class Webhooks extends Component
         $this->showCreate = true;
     }
 
-    public function create(): void
+    public function create(Limits $limits): void
     {
         $this->authorizeManage();
         $this->validate([
             'newName' => ['required', 'string', 'max:120'],
             'newUrl' => ['required', 'url', 'max:500'],
         ]);
+
+        if (! $limits->canAddWebhook(app(Tenancy::class)->current())) {
+            $this->addError('newUrl', 'Your plan doesn\'t allow webhooks (or you\'ve hit the limit). Upgrade to add more.');
+            return;
+        }
 
         WebhookEndpoint::create([
             'questionnaire_id' => $this->questionnaire->id,

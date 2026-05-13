@@ -5,6 +5,7 @@
             <flux:navlist.item href="{{ route('settings.password') }}" wire:navigate>Password</flux:navlist.item>
             <flux:navlist.item href="{{ route('settings.appearance') }}" wire:navigate>Appearance</flux:navlist.item>
             <flux:navlist.item href="{{ route('settings.members') }}" wire:navigate>Members</flux:navlist.item>
+            <flux:navlist.item href="{{ route('settings.billing') }}" wire:navigate>Billing</flux:navlist.item>
         </flux:navlist>
     </div>
 

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Tenancy;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Cashier\Subscription;
 use Livewire\Livewire;
 
 function workspaceWithOwner(): array
@@ -16,6 +17,15 @@ function workspaceWithOwner(): array
     $workspace->attachMember($owner, WorkspaceRole::Owner);
     $owner->forceFill(['current_workspace_id' => $workspace->id])->save();
     app(Tenancy::class)->setCurrent($workspace);
+
+    // Phase 2 tests predate plan limits — give the workspace a paid plan so
+    // member-management isn't gated by the Free-plan team-size cap.
+    config()->set('billing.plans.pro.stripe_price', 'price_test_pro');
+    Subscription::create([
+        'workspace_id' => $workspace->id, 'type' => 'default',
+        'stripe_id' => 'sub_test_'.uniqid(), 'stripe_status' => 'active',
+        'stripe_price' => 'price_test_pro', 'quantity' => 1,
+    ]);
 
     return [$owner, $workspace];
 }

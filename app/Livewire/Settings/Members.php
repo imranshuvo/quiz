@@ -5,6 +5,7 @@ namespace App\Livewire\Settings;
 use App\Enums\WorkspaceRole;
 use App\Mail\WorkspaceInvitationMail;
 use App\Models\WorkspaceInvitation;
+use App\Services\Billing\Limits;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
@@ -30,7 +31,7 @@ class Members extends Component
         ];
     }
 
-    public function sendInvitation(Tenancy $tenancy): void
+    public function sendInvitation(Tenancy $tenancy, Limits $limits): void
     {
         $workspace = $tenancy->current();
         abort_unless($workspace, 404);
@@ -40,6 +41,11 @@ class Members extends Component
         abort_unless($role && $role->canManageMembers(), 403);
 
         $this->validate();
+
+        if (! $limits->canInviteMember($workspace)) {
+            $this->addError('inviteEmail', 'Your plan\'s team-member limit has been reached. Upgrade to invite more.');
+            return;
+        }
 
         // No duplicate active invites for same email + workspace.
         if ($workspace->invitations()
