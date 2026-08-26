@@ -13,7 +13,9 @@
             <button
                 type="button"
                 wire:click="setScalar({{ $q->id }}, {{ $n }})"
-                class="rounded-lg border py-3 font-semibold tabular-nums transition {{ $isSel ? 'border-transparent bg-gradient-to-br '.$hue.' text-white shadow-md scale-105' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500' }}"
+                aria-pressed="{{ $isSel ? 'true' : 'false' }}"
+                aria-label="Net Promoter Score {{ $n }} out of 10"
+                class="rounded-lg border py-3 font-semibold tabular-nums transition focus-visible:ring-2 focus-visible:ring-accent {{ $isSel ? 'border-transparent bg-gradient-to-br '.$hue.' text-white shadow-md scale-105' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500' }}"
             >
                 {{ $n }}
             </button>

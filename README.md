@@ -31,14 +31,20 @@ The platform aims to combine, in a single Laravel app, the value of:
 
 ## Phased delivery plan
 
-1. **Foundation** ✅ Laravel 12 skeleton with Livewire + Filament + Reverb + Cashier + Prism + Horizon + Telescope + Pest, MySQL-ready, login/dashboard/admin all reachable.
-2. **Multi-tenant core** — workspaces, members, roles (owner/admin/editor/viewer), invitations, tenant-scoped models.
-3. **Content engine** — polymorphic `questionnaires` (assessment | survey | poll | form), shared question type library, branching/skip-logic JSON.
-4. **Taker flows** — share links, embeds, anonymous + auth takers, live-poll join-by-code over Reverb.
-5. **AI layer (Prism)** — question generation, rubric grading, adaptive difficulty, cross-response insights — all routed through one `AiUsage` ledger.
-6. **Reporting & exports** — dashboards, PDF (Browsershot), CSV/Excel, webhooks.
-7. **Billing** — Cashier + Stripe per workspace, plans (Free/Pro/Business), AI metering, Stripe Tax.
-8. **Polish** — API + Sanctum, activity log, audit, rate limits, a11y.
+1. **Foundation** ✅ Laravel 12, Livewire, Filament, Reverb, Cashier, Prism, Horizon, Telescope, Pest, and a working workspace dashboard.
+2. **Multi-tenant core** ✅ Workspaces, members, owner/admin/editor/viewer roles, invitations, switching, and tenant-scoped models.
+3. **Content engine** ✅ Assessment/survey/poll/form questionnaires, ten question types, choices, scoring metadata, and branching rules.
+4. **Taker flows** ✅ Share links, embeds, resumable anonymous/authenticated responses, private file answers, live polls, results, and live leaderboards.
+5. **AI layer** ✅ Question generation, rubric grading, adaptive difficulty, and cross-response insights through one `AiUsage` ledger.
+6. **Reporting & exports** ✅ Response review, analytics, PDF reports, Excel-compatible CSV, and signed webhooks with delivery history.
+7. **Billing** ✅ Cashier + Stripe per workspace, Free/Pro/Business gates, team limits, response usage, AI metering, checkout, and portal access.
+8. **Polish** ✅ Tenant-safe Sanctum API, scoped token management, workspace audit log, rate limits, staff-only admin, and accessibility foundations.
+
+## API
+
+Create a read-only or read/write token at `/settings/api-tokens`, then send it as a bearer token. API routes are under `/api/v1` and include workspace details, questionnaire/question/option CRUD, responses, and analytics. When a user belongs to several workspaces, pass the workspace slug in `X-Workspace`.
+
+Tokens expire after one year and can be revoked from the same settings page. Read-only tokens cannot mutate content, and a token never grants more access than its user's workspace role.
 
 The original Laravel 5 quiz app lives on the `v5` branch and is used only as a feature reference.
 
@@ -63,3 +69,9 @@ Default URLs once running:
 - `/admin` — Filament back-office
 - `/horizon` — queue monitor
 - `/telescope` — request/query/job inspector (dev)
+
+Grant the first internal staff user access to `/admin` with:
+
+```bash
+php artisan user:admin staff@example.com
+```

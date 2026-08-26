@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\WorkspaceRole;
+use App\Models\Concerns\LogsWorkspaceActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class WorkspaceInvitation extends Model
 {
+    use LogsWorkspaceActivity;
+
     protected $fillable = [
         'workspace_id',
         'invited_by',

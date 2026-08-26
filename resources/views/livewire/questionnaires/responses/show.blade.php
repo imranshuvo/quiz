@@ -61,7 +61,12 @@
                             $val = is_array($a->value) ? $a->value : [$a->value];
                             $byOption = $q->options->keyBy('value');
                         @endphp
-                        @if ($q->type->hasOptions())
+                        @if ($q->type === \App\Enums\QuestionType::File && is_array($val[0] ?? null))
+                            <a class="inline-flex items-center gap-2 text-sm font-medium underline underline-offset-4" href="{{ route('questionnaires.responses.files.download', [$questionnaire, $response, $a]) }}">
+                                <flux:icon.arrow-down-tray class="size-4" />
+                                {{ $val[0]['name'] ?? 'Download file' }}
+                            </a>
+                        @elseif ($q->type->hasOptions())
                             <ul class="space-y-1">
                                 @foreach ($val as $v)
                                     <li class="text-sm">

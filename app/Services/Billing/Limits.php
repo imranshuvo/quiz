@@ -33,6 +33,7 @@ class Limits
     public function limitsFor(Workspace $workspace): array
     {
         $plan = $this->planFor($workspace);
+
         return (array) config("billing.plans.{$plan->value}.limits", []);
     }
 
@@ -83,6 +84,7 @@ class Limits
                 'pct' => $this->percent($used, $limit),
             ];
         }
+
         return $out;
     }
 
@@ -114,6 +116,7 @@ class Limits
             return false;
         }
         $used = $this->usageFor($workspace)['responses_per_month'] ?? 0;
+
         return $used >= $limit;
     }
 
@@ -129,6 +132,7 @@ class Limits
         }
 
         $used = $this->usageFor($workspace)[$key] ?? 0;
+
         return $used < $limit;
     }
 
@@ -140,6 +144,7 @@ class Limits
         if ($limit <= 0) {
             return 100;
         }
+
         return min(100, (int) round(($used / $limit) * 100));
     }
 }

@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\QuestionnaireExportController;
+use App\Http\Controllers\QuestionnaireReportController;
+use App\Http\Controllers\ResponseFileController;
 use App\Http\Controllers\WorkspaceInvitationController;
+use App\Livewire\Dashboard as DashboardPage;
+use App\Livewire\Public\Leaderboard as PublicLeaderboard;
 use App\Livewire\Public\Poll as PublicPoll;
 use App\Livewire\Public\Result as PublicResult;
 use App\Livewire\Public\Taker as PublicTaker;
@@ -12,6 +16,8 @@ use App\Livewire\Questionnaires\Index as QuestionnairesIndex;
 use App\Livewire\Questionnaires\Responses\Index as QuestionnaireResponsesIndex;
 use App\Livewire\Questionnaires\Responses\Show as QuestionnaireResponsesShow;
 use App\Livewire\Questionnaires\Webhooks as QuestionnaireWebhooks;
+use App\Livewire\Settings\ApiTokens as ApiTokensPage;
+use App\Livewire\Settings\AuditLog as AuditLogPage;
 use App\Livewire\Settings\Billing as BillingPage;
 use App\Livewire\Settings\Members as MembersPage;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +27,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', DashboardPage::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -34,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/members', MembersPage::class)->name('settings.members');
     Route::get('settings/billing', BillingPage::class)->name('settings.billing');
+    Route::get('settings/api-tokens', ApiTokensPage::class)->name('settings.api-tokens');
+    Route::get('settings/audit-log', AuditLogPage::class)->name('settings.audit-log');
 
     Route::post('billing/checkout/{plan}', [BillingController::class, 'checkout'])->name('billing.checkout');
     Route::post('billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
@@ -45,7 +53,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('questionnaires/{questionnaire}/responses/{response}', QuestionnaireResponsesShow::class)
         ->where('response', '[0-9]+')
         ->name('questionnaires.responses.show');
+    Route::get('questionnaires/{questionnaire}/responses/{response}/files/{answer}', [ResponseFileController::class, 'download'])
+        ->name('questionnaires.responses.files.download');
     Route::get('questionnaires/{questionnaire}/analytics', QuestionnaireAnalytics::class)->name('questionnaires.analytics');
+    Route::get('questionnaires/{questionnaire}/analytics/report.pdf', [QuestionnaireReportController::class, 'pdf'])->name('questionnaires.analytics.pdf');
     Route::get('questionnaires/{questionnaire}/webhooks', QuestionnaireWebhooks::class)->name('questionnaires.webhooks');
 });
 
@@ -61,6 +72,7 @@ Route::post('invitations/{token}/accept', [WorkspaceInvitationController::class,
 Route::get('q/{slug}', PublicTaker::class)->name('public.taker');
 Route::get('q/{slug}/result/{response}', PublicResult::class)->name('public.result');
 Route::get('poll/{slug}', PublicPoll::class)->name('public.poll');
+Route::get('q/{slug}/leaderboard', PublicLeaderboard::class)->name('public.leaderboard');
 Route::get('embed/q/{slug}', PublicTaker::class)->name('public.embed');
 
 require __DIR__.'/auth.php';

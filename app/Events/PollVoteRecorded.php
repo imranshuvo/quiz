@@ -23,8 +23,7 @@ class PollVoteRecorded implements ShouldBroadcastNow
     public function __construct(
         public Questionnaire $questionnaire,
         public int $questionId,
-    ) {
-    }
+    ) {}
 
     public function broadcastOn(): Channel
     {

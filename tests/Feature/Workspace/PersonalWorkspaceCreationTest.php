@@ -3,10 +3,11 @@
 use App\Enums\WorkspaceRole;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\Event;
 
 it('creates a personal workspace when a user registers', function () {
-    Event::fake([\Illuminate\Notifications\Events\NotificationSent::class]);
+    Event::fake([NotificationSent::class]);
 
     $user = User::factory()->create(['name' => 'Ada Lovelace']);
 

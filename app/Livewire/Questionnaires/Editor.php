@@ -2,16 +2,14 @@
 
 namespace App\Livewire\Questionnaires;
 
-use App\Enums\QuestionnaireStatus;
 use App\Enums\QuestionType;
 use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\Questionnaire;
+use App\Models\QuestionOption;
 use App\Services\AI\QuestionGenerator;
 use App\Services\Billing\Limits;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
-use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Throwable;
@@ -24,6 +22,8 @@ class Editor extends Component
     public string $title = '';
 
     public string $description = '';
+
+    public bool $adaptiveDifficulty = false;
 
     /* AI generate modal state */
     public bool $showAiGenerate = false;
@@ -42,6 +42,7 @@ class Editor extends Component
         $this->questionnaire = $questionnaire;
         $this->title = $questionnaire->title;
         $this->description = (string) $questionnaire->description;
+        $this->adaptiveDifficulty = (bool) ($questionnaire->settings['adaptive_difficulty'] ?? false);
     }
 
     protected function authorizeAccess(Questionnaire $q): void
@@ -64,10 +65,20 @@ class Editor extends Component
         ])->save();
     }
 
+    public function toggleAdaptiveDifficulty(bool $enabled): void
+    {
+        abort_unless($this->questionnaire->kind->isGraded(), 422);
+        $this->adaptiveDifficulty = $enabled;
+        $this->questionnaire->update([
+            'settings' => [...($this->questionnaire->settings ?? []), 'adaptive_difficulty' => $enabled],
+        ]);
+    }
+
     public function publish(): void
     {
         if ($this->questionnaire->questions()->count() === 0) {
             $this->addError('publish', 'Add at least one question before publishing.');
+
             return;
         }
         $this->questionnaire->publish();
@@ -94,6 +105,7 @@ class Editor extends Component
 
         if (! $limits->canMakeAiCall($this->questionnaire->workspace)) {
             $this->aiError = 'You\'ve hit your AI call limit for this month. Upgrade your plan or wait until next month.';
+
             return;
         }
 
@@ -110,6 +122,7 @@ class Editor extends Component
         } catch (Throwable $e) {
             $this->aiError = 'AI generation failed: '.$e->getMessage();
             $this->aiGenerating = false;
+
             return;
         }
 
@@ -145,12 +158,19 @@ class Editor extends Component
         $allowed = ['title', 'helper', 'required'];
         abort_unless(in_array($field, $allowed, true), 422);
 
-        Question::where('id', $questionId)->update([$field => $value]);
+        Question::findOrFail($questionId)->update([$field => $value]);
+    }
+
+    public function updateQuestionDifficulty(int $questionId, int $difficulty): void
+    {
+        abort_unless($difficulty >= 1 && $difficulty <= 5, 422);
+        $question = Question::findOrFail($questionId);
+        $question->update(['meta' => [...($question->meta ?? []), 'difficulty' => $difficulty]]);
     }
 
     public function deleteQuestion(int $questionId): void
     {
-        Question::where('id', $questionId)->delete();
+        Question::findOrFail($questionId)->delete();
     }
 
     public function addOption(int $questionId): void
@@ -174,12 +194,12 @@ class Editor extends Component
         $allowed = ['label', 'value', 'is_correct', 'score'];
         abort_unless(in_array($field, $allowed, true), 422);
 
-        QuestionOption::where('id', $optionId)->update([$field => $value]);
+        QuestionOption::findOrFail($optionId)->update([$field => $value]);
     }
 
     public function deleteOption(int $optionId): void
     {
-        QuestionOption::where('id', $optionId)->delete();
+        QuestionOption::findOrFail($optionId)->delete();
     }
 
     public function render(): View

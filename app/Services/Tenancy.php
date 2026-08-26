@@ -22,6 +22,7 @@ class Tenancy
     public function setCurrent(?Workspace $workspace): self
     {
         $this->current = $workspace;
+
         return $this;
     }
 
@@ -41,6 +42,7 @@ class Tenancy
         if ($first && (int) $user->current_workspace_id !== $first->id) {
             $user->forceFill(['current_workspace_id' => $first->id])->saveQuietly();
         }
+
         return $first;
     }
 

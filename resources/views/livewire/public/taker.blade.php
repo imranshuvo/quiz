@@ -5,6 +5,11 @@
             <div class="flex-1">
                 <div class="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200/80 dark:bg-zinc-800">
                     <div
+                        role="progressbar"
+                        aria-label="Questionnaire progress"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow="{{ $progress }}"
                         class="h-full rounded-full bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-pink-500 transition-[width] duration-500 ease-out"
                         style="width: {{ $progress }}%"
                     ></div>
@@ -27,7 +32,7 @@
             <div
                 wire:key="question-{{ $current->id }}"
                 x-data="{ show: false }"
-                x-init="$nextTick(() => show = true)"
+                x-init="$nextTick(() => { show = true; $el.querySelector('h1')?.focus(); })"
                 x-show="show"
                 x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 translate-y-3"
@@ -41,7 +46,7 @@
                             <span class="text-pink-500">·  required</span>
                         @endif
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-semibold leading-snug text-balance">
+                    <h1 tabindex="-1" class="text-2xl sm:text-3xl font-semibold leading-snug text-balance focus:outline-none">
                         {{ $current->title }}
                     </h1>
                     @if ($current->helper)
@@ -56,7 +61,7 @@
                     ])
                 </div>
 
-                @error('answer') <flux:text class="text-pink-600">{{ $message }}</flux:text> @enderror
+                @error('answer') <flux:text role="alert" aria-live="assertive" class="text-pink-600">{{ $message }}</flux:text> @enderror
 
                 <div class="flex items-center justify-between pt-4">
                     @if ($position > 1)
@@ -89,7 +94,7 @@
     {{-- Global Enter-to-advance binding --}}
     <div
         x-data
-        x-on:keydown.enter.window.prevent="$wire.next()"
+        x-on:keydown.enter.window="if (!['TEXTAREA', 'BUTTON'].includes($event.target.tagName)) { $event.preventDefault(); $wire.next(); }"
         class="sr-only"
         aria-hidden="true"
     ></div>

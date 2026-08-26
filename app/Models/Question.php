@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\QuestionType;
 use App\Models\Concerns\BelongsToWorkspace;
+use App\Models\Concerns\LogsWorkspaceActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class Question extends Model
 {
     use BelongsToWorkspace;
     use HasFactory;
+    use LogsWorkspaceActivity;
     use SoftDeletes;
 
     protected $fillable = [

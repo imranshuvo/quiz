@@ -34,6 +34,7 @@ enum Plan: string
                 return $plan;
             }
         }
+
         return self::Free;
     }
 }

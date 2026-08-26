@@ -2,7 +2,7 @@
     <header class="space-y-3 text-center">
         <flux:badge color="lime" class="inline-flex items-center gap-1.5">
             <span class="relative flex size-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span aria-hidden="true" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
             </span>
             LIVE
@@ -11,7 +11,7 @@
         @if ($questionnaire->description)
             <p class="text-zinc-600 dark:text-zinc-400">{{ $questionnaire->description }}</p>
         @endif
-        <p class="text-sm text-zinc-500 tabular-nums">
+        <p class="text-sm text-zinc-500 tabular-nums" aria-live="polite">
             {{ $totalVoters }} {{ $totalVoters === 1 ? 'voter' : 'voters' }}
         </p>
     </header>

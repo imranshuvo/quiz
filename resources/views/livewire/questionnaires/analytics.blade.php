@@ -1,6 +1,10 @@
 <div class="mx-auto w-full max-w-6xl p-6 space-y-6">
     @include('livewire.questionnaires.partials.subnav', ['questionnaire' => $questionnaire, 'active' => 'analytics'])
 
+    <div class="flex justify-end">
+        <flux:button size="sm" variant="ghost" icon="document-arrow-down" :href="route('questionnaires.analytics.pdf', $questionnaire)">Export PDF</flux:button>
+    </div>
+
     {{-- Top stats --}}
     <div class="grid gap-3 sm:grid-cols-4">
         <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4">

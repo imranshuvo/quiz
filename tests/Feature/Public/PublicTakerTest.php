@@ -8,15 +8,17 @@ use App\Events\PollVoteRecorded;
 use App\Jobs\GradeResponse;
 use App\Livewire\Public\Taker;
 use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\Questionnaire;
+use App\Models\QuestionOption;
 use App\Models\Response;
 use App\Models\ResponseAnswer;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Tenancy;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -138,7 +140,7 @@ it('public result route returns 200 for a submitted response', function () {
     $first = $q->questions()->orderBy('position')->first();
     $second = $q->questions()->orderBy('position')->skip(1)->first();
 
-    Livewire::test(Taker::class, ['slug' => $q->slug])
+    $component = Livewire::test(Taker::class, ['slug' => $q->slug])
         ->call('selectChoice', $first->id, 'a')
         ->call('next')
         ->call('setScalar', $second->id, 'free')
@@ -146,7 +148,27 @@ it('public result route returns 200 for a submitted response', function () {
 
     $r = Response::withoutWorkspaceScope()->first();
 
-    $this->get(route('public.result', ['slug' => $q->slug, 'response' => $r->id]))->assertOk();
+    $redirect = $component->effects['redirect'] ?? null;
+    $this->get($redirect)->assertOk();
+});
+
+it('stores file answers on the private disk', function () {
+    Storage::fake('local');
+    $q = Questionnaire::factory()->form()->published()->create(['workspace_id' => $this->workspace->id]);
+    $question = Question::factory()->forQuestionnaire($q)->create([
+        'type' => QuestionType::File,
+        'required' => true,
+        'position' => 1,
+    ]);
+
+    Livewire::test(Taker::class, ['slug' => $q->slug])
+        ->set("uploads.{$question->id}", UploadedFile::fake()->create('evidence.pdf', 100, 'application/pdf'))
+        ->call('saveUpload', $question->id)
+        ->assertHasNoErrors();
+
+    $answer = ResponseAnswer::withoutWorkspaceScope()->first();
+    expect($answer->value[0]['name'])->toBe('evidence.pdf');
+    Storage::disk('local')->assertExists($answer->value[0]['path']);
 });
 
 it('result route 404s if response is not submitted', function () {

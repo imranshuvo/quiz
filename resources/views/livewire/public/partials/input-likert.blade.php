@@ -12,7 +12,9 @@
             <button
                 type="button"
                 wire:click="setScalar({{ $q->id }}, {{ $n }})"
-                class="rounded-xl border py-4 text-lg font-medium transition {{ $isSel ? 'border-accent bg-accent text-accent-foreground' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500' }}"
+                aria-pressed="{{ $isSel ? 'true' : 'false' }}"
+                aria-label="{{ $n }}: {{ $n === $min ? $minLabel : ($n === $max ? $maxLabel : $n) }}"
+                class="rounded-xl border py-4 text-lg font-medium transition focus-visible:ring-2 focus-visible:ring-accent {{ $isSel ? 'border-accent bg-accent text-accent-foreground' : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500' }}"
             >
                 {{ $n }}
             </button>

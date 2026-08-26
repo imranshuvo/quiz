@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\WorkspaceRole;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,11 +13,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -35,6 +37,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -86,10 +89,8 @@ class User extends Authenticatable implements FilamentUser
             ->implode('');
     }
 
-    // Filament: gate the /admin panel to internal staff. For now any
-    // authenticated user can enter; tighten with a real staff flag in Phase 8.
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return (bool) $this->is_admin;
     }
 }

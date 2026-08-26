@@ -4,7 +4,6 @@ namespace App\Livewire\Settings;
 
 use App\Enums\WorkspaceRole;
 use App\Mail\WorkspaceInvitationMail;
-use App\Models\WorkspaceInvitation;
 use App\Services\Billing\Limits;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
@@ -44,6 +43,7 @@ class Members extends Component
 
         if (! $limits->canInviteMember($workspace)) {
             $this->addError('inviteEmail', 'Your plan\'s team-member limit has been reached. Upgrade to invite more.');
+
             return;
         }
 
@@ -55,12 +55,14 @@ class Members extends Component
             ->exists()
         ) {
             $this->addError('inviteEmail', 'A pending invitation already exists for that address.');
+
             return;
         }
 
         // No-op if they're already a member.
         if ($workspace->members()->where('users.email', $this->inviteEmail)->exists()) {
             $this->addError('inviteEmail', 'That user is already a member.');
+
             return;
         }
 
@@ -82,7 +84,7 @@ class Members extends Component
         abort_unless($workspace, 404);
         abort_unless(auth()->user()->roleIn($workspace)?->canManageMembers(), 403);
 
-        $workspace->invitations()->where('id', $invitationId)->delete();
+        $workspace->invitations()->findOrFail($invitationId)->delete();
     }
 
     public function removeMember(int $userId, Tenancy $tenancy): void
@@ -93,6 +95,7 @@ class Members extends Component
 
         if ($workspace->owner_id === $userId) {
             $this->addError('removal', "The workspace owner can't be removed.");
+
             return;
         }
 
@@ -100,10 +103,11 @@ class Members extends Component
         // Use "leave workspace" UI for that (Phase 2.5 polish).
         if ($userId === auth()->id()) {
             $this->addError('removal', "You can't remove yourself here.");
+
             return;
         }
 
-        $workspace->members()->detach($userId);
+        $workspace->memberships()->where('user_id', $userId)->firstOrFail()->delete();
     }
 
     public function changeRole(int $userId, string $role, Tenancy $tenancy): void
@@ -123,10 +127,11 @@ class Members extends Component
         // would leave you unable to undo the action.
         if ($userId === auth()->id() && ! $newRole->canManageMembers()) {
             $this->addError('role', "You can't demote yourself out of admin here.");
+
             return;
         }
 
-        $workspace->memberships()->where('user_id', $userId)->update(['role' => $newRole->value]);
+        $workspace->memberships()->where('user_id', $userId)->firstOrFail()->update(['role' => $newRole->value]);
     }
 
     public function render(Tenancy $tenancy): View

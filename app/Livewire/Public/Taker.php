@@ -19,13 +19,20 @@ use App\Services\Scoring;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.public')]
 class Taker extends Component
 {
+    use WithFileUploads;
+
     public string $slug = '';
 
     public int $workspaceId = 0;
@@ -38,6 +45,9 @@ class Taker extends Component
 
     /** @var array<int, mixed>  question_id => current answer value */
     public array $answers = [];
+
+    /** @var array<int, TemporaryUploadedFile> */
+    public array $uploads = [];
 
     public bool $submitted = false;
 
@@ -67,7 +77,9 @@ class Taker extends Component
 
         // Start at the first question by position, unless we already have a
         // partial response in flight (then continue from the first unanswered).
-        $this->currentQuestionId = $this->firstUnansweredQuestionId($q) ?? $q->questions()->orderBy('position')->value('id');
+        $this->currentQuestionId = empty($this->answers)
+            ? $this->firstQuestionId($q)
+            : ($this->firstUnansweredQuestionId($q) ?? $this->firstQuestionId($q));
     }
 
     /** Livewire 3 hydration hook — re-establish tenancy on every request. */
@@ -123,6 +135,39 @@ class Taker extends Component
         }
     }
 
+    public function saveUpload(int $questionId): void
+    {
+        $question = Question::find($questionId);
+        abort_unless(
+            $question
+            && $question->questionnaire_id === $this->questionnaireId
+            && $question->type === QuestionType::File,
+            404,
+        );
+
+        $maxKb = min(20 * 1024, max(1, (int) ($question->meta['max_size_kb'] ?? 10 * 1024)));
+        $this->validate([
+            "uploads.{$questionId}" => ['required', 'file', 'max:'.$maxKb],
+        ], attributes: ["uploads.{$questionId}" => 'file']);
+
+        $upload = $this->uploads[$questionId];
+        $existing = $this->answers[$questionId][0] ?? null;
+        if (is_array($existing) && isset($existing['path'])) {
+            Storage::disk('local')->delete($existing['path']);
+        }
+
+        $path = $upload->store("responses/{$this->responseId}", 'local');
+        $this->answers[$questionId] = [[
+            'path' => $path,
+            'name' => mb_substr($upload->getClientOriginalName(), 0, 255),
+            'mime' => $upload->getMimeType(),
+            'size' => $upload->getSize(),
+        ]];
+
+        $this->persistAnswer($questionId);
+        unset($this->uploads[$questionId]);
+    }
+
     public function next(Branching $branching): void
     {
         if (! $this->currentQuestionId) {
@@ -138,12 +183,14 @@ class Taker extends Component
         $val = $this->answers[$current->id] ?? null;
         if ($current->required && ! $this->hasNonEmptyAnswer($val)) {
             $this->addError('answer', 'This question is required.');
+
             return;
         }
 
         $next = $branching->nextQuestionId($current, $val, $this->response());
         if ($next === null) {
             $this->submit(app(Scoring::class));
+
             return;
         }
         $this->currentQuestionId = $next;
@@ -167,6 +214,14 @@ class Taker extends Component
 
     public function submit(Scoring $scoring): void
     {
+        $rateKey = 'submission:'.request()->ip().':'.$this->slug;
+        if (RateLimiter::tooManyAttempts($rateKey, 10)) {
+            $this->addError('answer', 'Too many submissions from this connection. Please wait a minute and try again.');
+
+            return;
+        }
+        RateLimiter::hit($rateKey, 60);
+
         $response = $this->response();
         $response->forceFill([
             'status' => ResponseStatus::Submitted,
@@ -186,7 +241,7 @@ class Taker extends Component
         // analytics / notification listeners.
         event(new ResponseSubmitted($response->fresh()));
 
-        $this->redirect(route('public.result', [
+        $this->redirect(URL::temporarySignedRoute('public.result', now()->addDays(30), [
             'slug' => $this->slug,
             'response' => $response->id,
         ]), navigate: false);
@@ -245,6 +300,7 @@ class Taker extends Component
         $cookieName = 'qz_'.substr(md5($this->slug), 0, 12);
         $token = Cookie::get($cookieName) ?: Str::random(48);
         Cookie::queue($cookieName, $token, minutes: 60 * 24 * 30);
+
         return $token;
     }
 
@@ -259,6 +315,19 @@ class Taker extends Component
         return $next;
     }
 
+    protected function firstQuestionId(Questionnaire $q): ?int
+    {
+        $questions = $q->questions()->get();
+
+        if (($q->settings['adaptive_difficulty'] ?? false) && $q->kind->isGraded()) {
+            return $questions
+                ->sortBy(fn (Question $question) => [(int) ($question->meta['difficulty'] ?? 3), $question->position])
+                ->first()?->id;
+        }
+
+        return $questions->sortBy('position')->first()?->id;
+    }
+
     protected function hasNonEmptyAnswer(mixed $value): bool
     {
         if ($value === null || $value === '') {
@@ -267,6 +336,7 @@ class Taker extends Component
         if (is_array($value)) {
             return count(array_filter($value, fn ($v) => $v !== null && $v !== '')) > 0;
         }
+
         return true;
     }
 

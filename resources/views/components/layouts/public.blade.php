@@ -14,7 +14,8 @@
         @fluxAppearance
     </head>
     <body class="min-h-screen bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 text-zinc-900 dark:text-zinc-100 antialiased selection:bg-accent/20">
-        <main class="min-h-screen w-full">
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+        <main id="main-content" tabindex="-1" class="min-h-screen w-full">
             {{ $slot }}
         </main>
 

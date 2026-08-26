@@ -28,6 +28,8 @@ use App\Models\Response;
  */
 class Branching
 {
+    public function __construct(protected Scoring $scoring) {}
+
     /**
      * Resolve the next question id (or null = end of questionnaire) given:
      *   $current  → the question just answered
@@ -44,7 +46,40 @@ class Branching
             }
         }
 
+        if (($current->questionnaire->settings['adaptive_difficulty'] ?? false)
+            && $current->questionnaire->kind->isGraded()
+        ) {
+            return $this->adaptiveNext($current, $value, $response);
+        }
+
         return $this->fallthrough($current);
+    }
+
+    protected function adaptiveNext(Question $current, mixed $value, Response $response): ?int
+    {
+        $answeredIds = array_unique([...$response->answers()->pluck('question_id')->all(), $current->id]);
+        $candidates = Question::where('questionnaire_id', $current->questionnaire_id)
+            ->whereNotIn('id', $answeredIds)
+            ->get();
+
+        if ($candidates->isEmpty()) {
+            return null;
+        }
+
+        $difficulty = min(5, max(1, (int) ($current->meta['difficulty'] ?? 3)));
+        [$correct] = $this->scoring->scoreAnswer($current, $value);
+        $target = match ($correct) {
+            true => min(5, $difficulty + 1),
+            false => max(1, $difficulty - 1),
+            default => $difficulty,
+        };
+
+        return $candidates
+            ->sortBy(fn (Question $question) => [
+                abs(((int) ($question->meta['difficulty'] ?? 3)) - $target),
+                $question->position,
+            ])
+            ->first()?->id;
     }
 
     protected function matches(array $when, mixed $value): bool
@@ -92,6 +127,7 @@ class Branching
         if (is_array($value)) {
             return $value[0] ?? null;
         }
+
         return $value;
     }
 
@@ -103,6 +139,7 @@ class Branching
         if (is_array($value)) {
             return count(array_filter($value, fn ($v) => $v !== null && $v !== '')) > 0;
         }
+
         return true;
     }
 }

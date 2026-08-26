@@ -3,6 +3,7 @@
     wire:keydown.enter.prevent="next"
     wire:change="setScalar({{ $q->id }}, $event.target.value)"
     :value="$current"
+    :aria-label="$q->title"
     placeholder="Type your answer here..."
     autofocus
     class="!text-lg"

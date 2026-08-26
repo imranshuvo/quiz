@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\WorkspaceRole;
+use App\Models\Concerns\LogsWorkspaceActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ class Workspace extends Model
 {
     use Billable;
     use HasFactory;
+    use LogsWorkspaceActivity;
     use SoftDeletes;
 
     protected $fillable = [
@@ -48,6 +50,7 @@ class Workspace extends Model
         while (static::withTrashed()->where('slug', $slug)->exists()) {
             $slug = $base.'-'.++$i;
         }
+
         return $slug;
     }
 
@@ -81,6 +84,7 @@ class Workspace extends Model
     public function roleFor(User $user): ?WorkspaceRole
     {
         $membership = $this->memberships()->where('user_id', $user->id)->first();
+
         // `$membership->role` is already cast to WorkspaceRole on WorkspaceUser.
         return $membership?->role;
     }

@@ -50,13 +50,14 @@ class Aggregator
             return null;
         }
         $pcts = $rows->map(fn ($r) => ((float) $r->score / (float) $r->max_score) * 100);
+
         return round($pcts->avg(), 1);
     }
 
     /**
      * Score distribution as 10-bucket histogram (0-9, 10-19, ..., 90-100).
      *
-     * @return array<int, int>  bucket-index → count
+     * @return array<int, int> bucket-index → count
      */
     public function scoreHistogram(Questionnaire $q): array
     {
@@ -75,6 +76,7 @@ class Aggregator
                 $idx = min(9, (int) floor($pct / 10));
                 $buckets[$idx]++;
             });
+
         return $buckets;
     }
 
@@ -118,7 +120,7 @@ class Aggregator
      * Per-question breakdown. For choice questions: vote tallies. For
      * scalar (likert/nps/rating): histogram. For text: a sample of N answers.
      *
-     * @return array<int, array<string, mixed>>  one entry per question
+     * @return array<int, array<string, mixed>> one entry per question
      */
     public function perQuestion(Questionnaire $q, int $textSampleLimit = 10): array
     {
@@ -186,6 +188,7 @@ class Aggregator
                 'is_correct' => (bool) $opt->is_correct,
             ];
         }
+
         return $rows;
     }
 
@@ -203,6 +206,7 @@ class Aggregator
                 $rows[$v]++;
             }
         }
+
         return $rows;
     }
 }

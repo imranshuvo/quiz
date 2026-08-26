@@ -6,6 +6,10 @@
             <flux:navlist.item href="{{ route('settings.appearance') }}" wire:navigate>Appearance</flux:navlist.item>
             <flux:navlist.item href="{{ route('settings.members') }}" wire:navigate>Members</flux:navlist.item>
             <flux:navlist.item href="{{ route('settings.billing') }}" wire:navigate>Billing</flux:navlist.item>
+            <flux:navlist.item href="{{ route('settings.api-tokens') }}" wire:navigate>API tokens</flux:navlist.item>
+            @if (($settingsWorkspace = app(\App\Services\Tenancy::class)->current()) && auth()->user()->roleIn($settingsWorkspace)?->canManageMembers())
+                <flux:navlist.item href="{{ route('settings.audit-log') }}" wire:navigate>Audit log</flux:navlist.item>
+            @endif
         </flux:navlist>
     </div>
 

@@ -3,14 +3,14 @@
 use App\Enums\QuestionnaireKind;
 use App\Enums\QuestionnaireStatus;
 use App\Enums\QuestionType;
-use App\Enums\ResponseStatus;
 use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\Questionnaire;
+use App\Models\QuestionOption;
 use App\Models\Response;
 use App\Models\ResponseAnswer;
 use App\Models\Workspace;
 use App\Services\Tenancy;
+use Illuminate\Database\QueryException;
 
 beforeEach(function () {
     $this->workspace = Workspace::factory()->create();
@@ -53,7 +53,7 @@ it('enforces uniqueness of (response_id, question_id) on answers', function () {
     ResponseAnswer::factory()->pair($r, $question)->create();
 
     expect(fn () => ResponseAnswer::factory()->pair($r, $question)->create())
-        ->toThrow(\Illuminate\Database\QueryException::class);
+        ->toThrow(QueryException::class);
 });
 
 it('computes max score from correct options on auto-gradable questions', function () {

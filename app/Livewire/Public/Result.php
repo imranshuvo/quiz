@@ -9,6 +9,7 @@ use App\Models\Response;
 use App\Models\Workspace;
 use App\Services\Tenancy;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Cookie;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -34,6 +35,13 @@ class Result extends Component
             $resp->questionnaire_id === $q->id && $resp->status === ResponseStatus::Submitted,
             404,
         );
+
+        $userOwnsResponse = auth()->check() && $resp->respondent_user_id === auth()->id();
+        $cookieName = 'qz_'.substr(md5($slug), 0, 12);
+        $sessionOwnsResponse = ! $resp->respondent_user_id
+            && hash_equals((string) $resp->session_token, (string) Cookie::get($cookieName));
+
+        abort_unless($userOwnsResponse || $sessionOwnsResponse || request()->hasValidSignature(), 404);
 
         $this->slug = $slug;
         $this->responseId = $resp->id;
@@ -68,6 +76,7 @@ class Result extends Component
             ? $response->answers->map(function ($a) {
                 $opts = $a->question->options;
                 $correct = $opts->where('is_correct', true)->pluck('label')->all();
+
                 return [
                     'question' => $a->question->title,
                     'is_correct' => $a->is_correct,

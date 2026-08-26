@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Questionnaire;
 use App\Models\WebhookEndpoint;
+use App\Models\Workspace;
 use App\Services\Tenancy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +21,7 @@ class WebhookEndpointFactory extends Factory
 
         return [
             // Workspace-wide endpoint by default; tests can override.
-            'workspace_id' => $current?->id ?? \App\Models\Workspace::factory(),
+            'workspace_id' => $current?->id ?? Workspace::factory(),
             'questionnaire_id' => null,
             'name' => fake()->unique()->words(2, true),
             'url' => fake()->url(),

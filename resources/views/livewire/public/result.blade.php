@@ -73,6 +73,9 @@
         @endif
 
         <div class="text-center">
+            @if ($isGraded)
+                <flux:button class="mb-4" variant="ghost" icon="trophy" :href="route('public.leaderboard', $questionnaire->slug)">View leaderboard</flux:button>
+            @endif
             <flux:text size="sm" class="text-zinc-500">Powered by {{ config('app.name') }}</flux:text>
         </div>
     </div>

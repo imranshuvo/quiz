@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToWorkspace;
+use App\Models\Concerns\LogsWorkspaceActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,7 @@ class QuestionOption extends Model
 {
     use BelongsToWorkspace;
     use HasFactory;
+    use LogsWorkspaceActivity;
 
     protected $fillable = [
         'workspace_id',

@@ -1,8 +1,6 @@
 <?php
 
-use App\Enums\WorkspaceRole;
 use App\Models\Concerns\BelongsToWorkspace;
-use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Tenancy;
 use Illuminate\Database\Eloquent\Model;
@@ -88,6 +86,7 @@ it('Tenancy::runAs scopes a callback to a different workspace', function () {
 
     $count = $tenancy->runAs($b, function () {
         TenantThing::create(['label' => 'b-thing']);
+
         return TenantThing::count();
     });
 

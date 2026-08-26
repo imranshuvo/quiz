@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Enums\WorkspaceRole;
+use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
@@ -12,7 +13,7 @@ class CreatePersonalWorkspace
     public function handle(Registered $event): void
     {
         $user = $event->user;
-        if (! $user instanceof \App\Models\User) {
+        if (! $user instanceof User) {
             return;
         }
 

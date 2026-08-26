@@ -8,6 +8,13 @@
             <flux:badge :color="$questionnaire->status->value === 'published' ? 'lime' : 'zinc'">
                 {{ $questionnaire->status->label() }} · {{ $questionnaire->kind->label() }}
             </flux:badge>
+            @if ($questionnaire->kind->isGraded())
+                <flux:checkbox
+                    label="Adaptive difficulty"
+                    :checked="$adaptiveDifficulty"
+                    wire:change="toggleAdaptiveDifficulty($event.target.checked)"
+                />
+            @endif
             @if ($questionnaire->status->value !== 'published')
                 <flux:button size="sm" variant="primary" icon="rocket-launch" wire:click="publish">Publish</flux:button>
             @else
@@ -45,7 +52,19 @@
         @forelse ($questions as $q)
             <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-4 space-y-3" wire:key="q-{{ $q->id }}">
                 <div class="flex items-center justify-between">
-                    <flux:badge size="sm" variant="subtle">#{{ $q->position }} · {{ $q->type->label() }}</flux:badge>
+                    <div class="flex items-center gap-2">
+                        <flux:badge size="sm" variant="subtle">#{{ $q->position }} · {{ $q->type->label() }}</flux:badge>
+                        @if ($questionnaire->kind->isGraded())
+                            <label class="flex items-center gap-1 text-xs text-zinc-500">
+                                Difficulty
+                                <select class="rounded border border-zinc-300 bg-transparent px-1 py-0.5 dark:border-zinc-700" wire:change="updateQuestionDifficulty({{ $q->id }}, $event.target.value)">
+                                    @for ($difficulty = 1; $difficulty <= 5; $difficulty++)
+                                        <option value="{{ $difficulty }}" @selected((int) ($q->meta['difficulty'] ?? 3) === $difficulty)>{{ $difficulty }}</option>
+                                    @endfor
+                                </select>
+                            </label>
+                        @endif
+                    </div>
                     <div class="flex items-center gap-2">
                         <flux:checkbox
                             label="Required"

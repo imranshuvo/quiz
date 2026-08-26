@@ -6,6 +6,7 @@ use App\Models\Questionnaire;
 use App\Models\Response;
 use App\Models\ResponseAnswer;
 use App\Models\Workspace;
+use App\Services\AI\Grader;
 use App\Services\Tenancy;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Testing\StructuredResponseFake;
@@ -33,7 +34,7 @@ it('GradeResponse job re-establishes tenancy and grades the response', function 
 
     // Direct invocation, mirroring queue worker handle().
     (new GradeResponse($r->id, $this->workspace->id))
-        ->handle(app(\App\Services\AI\Grader::class), app(Tenancy::class));
+        ->handle(app(Grader::class), app(Tenancy::class));
 
     expect((float) $r->fresh()->answers->first()->score)->toBe(1.0);
 });
@@ -43,7 +44,7 @@ it('GradeResponse job drops gracefully when the workspace is gone', function () 
 
     // Should not throw.
     (new GradeResponse(responseId: 1, workspaceId: $missingWorkspaceId))
-        ->handle(app(\App\Services\AI\Grader::class), app(Tenancy::class));
+        ->handle(app(Grader::class), app(Tenancy::class));
 
     expect(true)->toBeTrue();
 });

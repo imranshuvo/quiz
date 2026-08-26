@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\QuestionnaireKind;
 use App\Enums\QuestionnaireStatus;
 use App\Models\Concerns\BelongsToWorkspace;
+use App\Models\Concerns\LogsWorkspaceActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ class Questionnaire extends Model
 {
     use BelongsToWorkspace;
     use HasFactory;
+    use LogsWorkspaceActivity;
     use SoftDeletes;
 
     protected $fillable = [

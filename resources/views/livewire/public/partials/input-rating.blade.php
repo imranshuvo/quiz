@@ -8,8 +8,9 @@
         <button
             type="button"
             wire:click="setScalar({{ $q->id }}, {{ $n }})"
-            class="transition-transform hover:scale-110 focus:outline-none"
-            aria-label="{{ $n }} stars"
+            class="rounded transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="{{ $n }} out of {{ $max }} stars"
+            aria-pressed="{{ $current === $n ? 'true' : 'false' }}"
         >
             <flux:icon.star class="size-10 {{ $active ? 'fill-amber-400 stroke-amber-400' : 'stroke-zinc-300 dark:stroke-zinc-600' }}" />
         </button>

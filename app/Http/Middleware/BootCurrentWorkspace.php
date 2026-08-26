@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BootCurrentWorkspace
 {
-    public function __construct(protected Tenancy $tenancy)
-    {
-    }
+    public function __construct(protected Tenancy $tenancy) {}
 
     public function handle(Request $request, Closure $next): Response
     {

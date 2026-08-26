@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Response;
+use App\Models\Workspace;
 use App\Services\AI\Grader;
 use App\Services\Tenancy;
 use Illuminate\Bus\Queueable;
@@ -23,20 +24,19 @@ class GradeResponse implements ShouldQueue
 
     public int $backoff = 30; // seconds
 
-    public function __construct(public int $responseId, public int $workspaceId)
-    {
-    }
+    public function __construct(public int $responseId, public int $workspaceId) {}
 
     public function handle(Grader $grader, Tenancy $tenancy): void
     {
         // Re-establish tenancy in the queue worker context — without it the
         // global scope would hide the response.
-        $workspace = \App\Models\Workspace::find($this->workspaceId);
+        $workspace = Workspace::find($this->workspaceId);
         if (! $workspace) {
             Log::warning('GradeResponse: workspace gone, dropping job', [
                 'workspace_id' => $this->workspaceId,
                 'response_id' => $this->responseId,
             ]);
+
             return;
         }
 

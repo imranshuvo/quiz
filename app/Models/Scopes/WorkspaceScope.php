@@ -19,6 +19,7 @@ class WorkspaceScope implements Scope
             // forget to set a workspace. Use `withoutWorkspaceScope()` to opt
             // out explicitly.
             $builder->whereRaw('1 = 0');
+
             return;
         }
 

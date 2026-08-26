@@ -30,8 +30,7 @@ class DeliverWebhook implements ShouldQueue
         public int $endpointId,
         public int $responseId,
         public int $workspaceId,
-    ) {
-    }
+    ) {}
 
     public function handle(Tenancy $tenancy): void
     {

@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\QuestionType;
 use App\Models\Question;
 use App\Models\Response;
-use App\Models\ResponseAnswer;
 
 /**
  * Computes scores for a Response. Only auto-gradable types contribute to the
@@ -51,6 +50,7 @@ class Scoring
                 'score' => null,
                 'max_score' => null,
             ])->save();
+
             return;
         }
 
@@ -95,6 +95,7 @@ class Scoring
         if ($picked->is_correct) {
             return [true, (float) $picked->score];
         }
+
         // A wrong pick on a graded single-choice could carry a negative
         // score for penalty schemes — return its raw score.
         return [false, (float) $picked->score];
@@ -119,6 +120,7 @@ class Scoring
             // Filter out empty strings/null in case of stale UI state.
             return array_values(array_filter($value, fn ($v) => $v !== null && $v !== ''));
         }
+
         return [$value];
     }
 }

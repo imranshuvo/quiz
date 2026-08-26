@@ -7,7 +7,6 @@ use App\Enums\WorkspaceRole;
 use App\Livewire\Questionnaires\Editor;
 use App\Livewire\Questionnaires\Index;
 use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\Questionnaire;
 use App\Models\User;
 use App\Models\Workspace;

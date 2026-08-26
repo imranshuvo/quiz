@@ -2,6 +2,7 @@
 
 use App\Models\Question;
 use App\Models\Questionnaire;
+use App\Models\QuestionOption;
 use App\Models\Response;
 use App\Models\Workspace;
 use App\Services\Branching;
@@ -73,4 +74,16 @@ it('"any" operator matches when any non-empty answer is given', function () {
     $r = Response::factory()->forQuestionnaire($q)->create();
 
     expect($this->branching->nextQuestionId($q1, ['something'], $r))->toBeNull();
+});
+
+it('adaptive difficulty moves up after a correct answer', function () {
+    $q = Questionnaire::factory()->create(['settings' => ['adaptive_difficulty' => true]]);
+    $current = Question::factory()->forQuestionnaire($q)->create(['position' => 1, 'meta' => ['difficulty' => 2]]);
+    QuestionOption::factory()->forQuestion($current)->correct(1)->create(['value' => 'right']);
+    $easier = Question::factory()->forQuestionnaire($q)->create(['position' => 2, 'meta' => ['difficulty' => 1]]);
+    $harder = Question::factory()->forQuestionnaire($q)->create(['position' => 3, 'meta' => ['difficulty' => 3]]);
+    $response = Response::factory()->forQuestionnaire($q)->create();
+
+    expect($this->branching->nextQuestionId($current, ['right'], $response))->toBe($harder->id);
+    expect($this->branching->nextQuestionId($current, ['wrong'], $response))->toBe($easier->id);
 });

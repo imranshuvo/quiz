@@ -19,9 +19,7 @@ use Prism\Prism\Schema\StringSchema;
  */
 class Insights
 {
-    public function __construct(protected Brain $brain)
-    {
-    }
+    public function __construct(protected Brain $brain) {}
 
     /**
      * @return array{themes: array<int, array{label: string, supporting_quote: string}>, sentiment: string, summary: string}|null

@@ -4,7 +4,6 @@ namespace App\Services\Reports;
 
 use App\Enums\ResponseStatus;
 use App\Models\Questionnaire;
-use Illuminate\Http\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -66,6 +65,7 @@ class CsvExporter
         if (is_array($value)) {
             return implode(' | ', array_map(fn ($v) => (string) $v, $value));
         }
+
         return (string) $value;
     }
 }

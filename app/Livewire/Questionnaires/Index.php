@@ -43,6 +43,7 @@ class Index extends Component
 
         if (! $limits->canCreateQuestionnaire($workspace)) {
             $this->addError('plan', 'You\'ve reached your plan\'s questionnaire limit. Upgrade to add more.');
+
             return;
         }
 

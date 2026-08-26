@@ -120,6 +120,7 @@ class Brain
                 'provider' => $provider,
                 'model' => $model,
             ]);
+
             return;
         }
 

@@ -5,9 +5,10 @@ use App\Livewire\Questionnaires\Editor;
 use App\Livewire\Questionnaires\Index;
 use App\Livewire\Questionnaires\Webhooks as WebhooksPage;
 use App\Livewire\Settings\Members;
-use App\Models\Question;
+use App\Models\AiUsage;
 use App\Models\Questionnaire;
 use App\Models\User;
+use App\Models\WebhookEndpoint;
 use App\Models\Workspace;
 use App\Services\Tenancy;
 use Livewire\Livewire;
@@ -41,7 +42,7 @@ it('the AI generate action blocks once the AI call limit is hit', function () {
 
     // Spend 20 AI calls (free limit).
     for ($i = 0; $i < 20; $i++) {
-        \App\Models\AiUsage::create([
+        AiUsage::create([
             'workspace_id' => $workspace->id,
             'kind' => 'generate_questions', 'provider' => 'fake', 'model' => 'fake',
             'prompt_tokens' => 1, 'completion_tokens' => 1, 'cost_cents' => 1,
@@ -72,7 +73,7 @@ it('the webhook create action blocks on the Free plan (limit 0)', function () {
         ->call('create')
         ->assertHasErrors(['newUrl']);
 
-    expect(\App\Models\WebhookEndpoint::withoutWorkspaceScope()->count())->toBe(0);
+    expect(WebhookEndpoint::withoutWorkspaceScope()->count())->toBe(0);
 });
 
 it('the member invite action blocks once team limit is hit', function () {

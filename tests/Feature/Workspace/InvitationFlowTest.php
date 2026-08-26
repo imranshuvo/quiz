@@ -4,7 +4,6 @@ use App\Enums\WorkspaceRole;
 use App\Mail\WorkspaceInvitationMail;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Models\WorkspaceInvitation;
 use Illuminate\Support\Facades\Mail;
 
 it('issues an invitation that can be accepted by the matching email', function () {

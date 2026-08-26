@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkspaceInvitation;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 class WorkspaceInvitationController extends Controller
 {
     /** Show an invitation. If guest, prompt to log in / register. */
-    public function show(string $token): Response|\Illuminate\View\View|\Illuminate\Http\RedirectResponse
+    public function show(string $token): Response|View|RedirectResponse
     {
         $invitation = WorkspaceInvitation::where('token', $token)->firstOrFail();
 
@@ -24,6 +26,7 @@ class WorkspaceInvitationController extends Controller
             // Stash where to send them after login/register so the same
             // accept handler picks back up.
             session(['url.intended' => route('workspace-invitations.show', $token)]);
+
             return redirect()->route('register', ['email' => $invitation->email]);
         }
 
@@ -31,7 +34,7 @@ class WorkspaceInvitationController extends Controller
     }
 
     /** Accept the invitation as the currently authenticated user. */
-    public function accept(Request $request, string $token): \Illuminate\Http\RedirectResponse
+    public function accept(Request $request, string $token): RedirectResponse
     {
         $invitation = WorkspaceInvitation::where('token', $token)->firstOrFail();
         abort_unless($invitation->isPending(), 410);

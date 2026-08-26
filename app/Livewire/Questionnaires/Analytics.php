@@ -41,6 +41,7 @@ class Analytics extends Component
         } catch (Throwable $e) {
             $this->analyzeError = 'Insights failed: '.$e->getMessage();
             $this->analyzing = false;
+
             return;
         }
 

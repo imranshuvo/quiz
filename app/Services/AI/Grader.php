@@ -21,9 +21,7 @@ use Prism\Prism\Schema\StringSchema;
  */
 class Grader
 {
-    public function __construct(protected Brain $brain)
-    {
-    }
+    public function __construct(protected Brain $brain) {}
 
     public function gradeResponse(Response $response): void
     {
@@ -92,6 +90,7 @@ class Grader
         if (is_numeric($configured)) {
             return (float) $configured;
         }
+
         // Sensible default so authors get useful grading without opting in.
         return 1.0;
     }
@@ -151,6 +150,7 @@ PROMPT;
         if (array_key_exists('is_correct', $structured)) {
             $out['is_correct'] = (bool) $structured['is_correct'];
         }
+
         return $out;
     }
 
@@ -173,6 +173,7 @@ PROMPT;
         if (is_array($value)) {
             return (string) ($value[0] ?? '');
         }
+
         return (string) $value;
     }
 }

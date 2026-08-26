@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\WorkspaceRole;
+use App\Models\Concerns\LogsWorkspaceActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WorkspaceUser extends Model
 {
+    use LogsWorkspaceActivity;
+
     protected $table = 'workspace_user';
 
     protected $fillable = [

@@ -2,6 +2,7 @@
 <flux:textarea
     wire:change="setScalar({{ $q->id }}, $event.target.value)"
     :value="$current"
+    :aria-label="$q->title"
     rows="5"
     placeholder="Take your time..."
     autofocus

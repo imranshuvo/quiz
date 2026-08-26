@@ -6,8 +6,8 @@ use App\Enums\AiUsageKind;
 use App\Enums\QuestionnaireKind;
 use App\Enums\QuestionType;
 use App\Models\Question;
-use App\Models\QuestionOption;
 use App\Models\Questionnaire;
+use App\Models\QuestionOption;
 use Prism\Prism\Schema\ArraySchema;
 use Prism\Prism\Schema\BooleanSchema;
 use Prism\Prism\Schema\EnumSchema;
@@ -21,12 +21,10 @@ use Prism\Prism\Schema\StringSchema;
  */
 class QuestionGenerator
 {
-    public function __construct(protected Brain $brain)
-    {
-    }
+    public function __construct(protected Brain $brain) {}
 
     /**
-     * @return array<int, Question>  the persisted questions, in position order
+     * @return array<int, Question> the persisted questions, in position order
      */
     public function generateForTopic(
         Questionnaire $questionnaire,
@@ -123,13 +121,14 @@ PROMPT;
                     ]),
                 ),
                 new BooleanSchema('required', 'Whether the respondent must answer.'),
+                new NumberSchema('difficulty', 'Difficulty from 1 (easiest) to 5 (hardest).'),
                 new ArraySchema(
                     name: 'options',
                     description: 'Choices for choice-type questions. Empty for text/likert/nps/rating/date.',
                     items: $optionSchema,
                 ),
             ],
-            requiredFields: ['title', 'type', 'required', 'options'],
+            requiredFields: ['title', 'type', 'required', 'difficulty', 'options'],
         );
 
         return new ObjectSchema(
@@ -170,6 +169,7 @@ PROMPT;
                 'helper' => $this->str($item['helper'] ?? '', 1000) ?: null,
                 'required' => (bool) ($item['required'] ?? false),
                 'position' => $position,
+                'meta' => ['difficulty' => min(5, max(1, (int) ($item['difficulty'] ?? 3)))],
             ]);
 
             if ($type->hasOptions()) {
@@ -198,12 +198,14 @@ PROMPT;
         if (! is_string($value)) {
             return null;
         }
+
         return QuestionType::tryFrom($value);
     }
 
     protected function str(mixed $value, int $max): string
     {
         $s = is_string($value) ? trim($value) : '';
+
         return mb_substr($s, 0, $max);
     }
 }

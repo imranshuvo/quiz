@@ -2,6 +2,7 @@
 
 use App\Enums\QuestionType;
 use App\Models\AiUsage;
+use App\Models\Question;
 use App\Models\Questionnaire;
 use App\Models\User;
 use App\Models\Workspace;
@@ -105,8 +106,8 @@ it('appends new questions after the existing ones, preserving position order', f
     ]);
 
     $q = Questionnaire::factory()->create();
-    \App\Models\Question::factory()->forQuestionnaire($q)->create(['position' => 1, 'title' => 'Existing']);
-    \App\Models\Question::factory()->forQuestionnaire($q)->create(['position' => 2, 'title' => 'Also existing']);
+    Question::factory()->forQuestionnaire($q)->create(['position' => 1, 'title' => 'Existing']);
+    Question::factory()->forQuestionnaire($q)->create(['position' => 2, 'title' => 'Also existing']);
 
     app(QuestionGenerator::class)->generateForTopic($q, 'Anything', count: 1);
 

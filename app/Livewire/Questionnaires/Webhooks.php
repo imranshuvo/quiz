@@ -50,6 +50,7 @@ class Webhooks extends Component
 
         if (! $limits->canAddWebhook(app(Tenancy::class)->current())) {
             $this->addError('newUrl', 'Your plan doesn\'t allow webhooks (or you\'ve hit the limit). Upgrade to add more.');
+
             return;
         }
 
@@ -76,7 +77,7 @@ class Webhooks extends Component
     public function delete(int $id): void
     {
         $this->authorizeManage();
-        WebhookEndpoint::where('questionnaire_id', $this->questionnaire->id)->where('id', $id)->delete();
+        WebhookEndpoint::where('questionnaire_id', $this->questionnaire->id)->findOrFail($id)->delete();
     }
 
     public function render(): View

@@ -3,5 +3,6 @@
     type="date"
     wire:change="setScalar({{ $q->id }}, $event.target.value)"
     :value="$current"
+    :aria-label="$q->title"
     class="!text-lg max-w-xs"
 />
